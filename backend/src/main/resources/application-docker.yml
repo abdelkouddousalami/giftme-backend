@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+giftme:
+  storage:
+    local:
+      base-path: ${FILE_STORAGE_PATH:/app/storage/uploads}
