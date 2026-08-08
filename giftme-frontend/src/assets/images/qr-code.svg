@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="10" fill="#FFFFFF" />
+  <g fill="#2C2C2C">
+    <path d="M10 10h60v60H10z" />
+    <path d="M130 10h60v60h-60z" />
+    <path d="M10 130h60v60H10z" />
+  </g>
+  <g fill="#FFFFFF">
+    <path d="M20 20h40v40H20z" />
+    <path d="M140 20h40v40h-40z" />
+    <path d="M20 140h40v40H20z" />
+  </g>
+  <g fill="#2C2C2C">
+    <path d="M30 30h20v20H30z" />
+    <path d="M150 30h20v20h-20z" />
+    <path d="M30 150h20v20H30z" />
+
+    <path d="M90 10h20v20H90z" />
+    <path d="M70 30h20v20H70z" />
+    <path d="M110 30h20v20h-20z" />
+    <path d="M90 50h20v20H90z" />
+
+    <path d="M10 90h20v20H10z" />
+    <path d="M50 90h20v20H50z" />
+    <path d="M90 90h20v20H90z" />
+    <path d="M130 90h20v20h-20z" />
+    <path d="M170 90h20v20h-20z" />
+
+    <path d="M30 110h20v20H30z" />
+    <path d="M70 110h20v20H70z" />
+    <path d="M110 110h20v20h-20z" />
+    <path d="M150 110h20v20h-20z" />
+
+    <path d="M90 130h20v20H90z" />
+    <path d="M130 130h20v20h-20z" />
+    <path d="M170 130h20v20h-20z" />
+
+    <path d="M110 150h20v20h-20z" />
+    <path d="M150 150h20v20h-20z" />
+
+    <path d="M90 170h20v20H90z" />
+    <path d="M130 170h20v20h-20z" />
+    <path d="M170 170h20v20h-20z" />
+  </g>
+</svg>

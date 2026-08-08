@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1080" width="900" height="1080">
+  <defs>
+    <linearGradient id="hpSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4C2CC" />
+      <stop offset="0.42" stop-color="#FADDD8" />
+      <stop offset="1" stop-color="#FCEFE4" />
+    </linearGradient>
+    <linearGradient id="hpHillFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A9C2B0" />
+      <stop offset="1" stop-color="#8FAE9A" />
+    </linearGradient>
+    <linearGradient id="hpHillNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E9580" />
+      <stop offset="1" stop-color="#4F7160" />
+    </linearGradient>
+    <radialGradient id="hpGlow" cx="0.68" cy="0.33" r="0.55">
+      <stop offset="0" stop-color="#F6D9AE" stop-opacity="0.85" />
+      <stop offset="1" stop-color="#F6D9AE" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="hpVignette" cx="0.5" cy="0.45" r="0.78">
+      <stop offset="0.55" stop-color="#7A4A3E" stop-opacity="0" />
+      <stop offset="1" stop-color="#7A4A3E" stop-opacity="0.18" />
+    </radialGradient>
+  </defs>
+
+  <rect width="900" height="1080" fill="url(#hpSky)" />
+  <rect width="900" height="1080" fill="url(#hpGlow)" />
+
+  <circle cx="612" cy="352" r="96" fill="#E7B183" opacity="0.7" />
+  <circle cx="612" cy="352" r="62" fill="#D4A373" />
+
+  <g stroke="#9C7561" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.45">
+    <path d="M150 246c14-13 22-13 34 0" />
+    <path d="M186 214c11-10 17-10 26 0" />
+    <path d="M234 268c9-8 14-8 21 0" />
+  </g>
+
+  <path d="M0 754c170-50 296 20 452-6s272-84 448-36v380H0z" fill="url(#hpHillFar)" />
+  <path d="M0 868c190-58 316 22 466 4s262-58 434-24v260H0z" fill="url(#hpHillNear)" />
+
+  <g fill="#3B5648">
+    <circle cx="366" cy="678" r="27" />
+    <path d="M366 712c26 0 40 22 44 58l11 98h-110l11-98c4-36 18-58 44-58z" />
+    <circle cx="496" cy="658" r="30" />
+    <path d="M496 696c28 0 44 24 48 62l11 110h-118l11-110c4-38 20-62 48-62z" />
+  </g>
+  <path d="M414 792c22-16 44-16 66 0" stroke="#3B5648" stroke-width="9" fill="none" stroke-linecap="round" />
+
+  <rect width="900" height="1080" fill="url(#hpVignette)" />
+
+  <g stroke="#FFF7F3" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round">
+    <path d="M180,0 L180,82 A26,26 0 0 1 180,134 L180,298 A26,26 0 0 0 180,350 L180,514 A26,26 0 0 1 180,566 L180,730 A26,26 0 0 0 180,782 L180,946 A26,26 0 0 1 180,998 L180,1080" />
+    <path d="M360,0 L360,82 A26,26 0 0 0 360,134 L360,298 A26,26 0 0 1 360,350 L360,514 A26,26 0 0 0 360,566 L360,730 A26,26 0 0 1 360,782 L360,946 A26,26 0 0 0 360,998 L360,1080" />
+    <path d="M540,0 L540,82 A26,26 0 0 1 540,134 L540,298 A26,26 0 0 0 540,350 L540,514 A26,26 0 0 1 540,566 L540,730 A26,26 0 0 0 540,782 L540,946 A26,26 0 0 1 540,998 L540,1080" />
+    <path d="M720,0 L720,82 A26,26 0 0 0 720,134 L720,298 A26,26 0 0 1 720,350 L720,514 A26,26 0 0 0 720,566 L720,730 A26,26 0 0 1 720,782 L720,946 A26,26 0 0 0 720,998 L720,1080" />
+    <path d="M0,216 L64,216 A26,26 0 0 1 116,216 L244,216 A26,26 0 0 0 296,216 L424,216 A26,26 0 0 1 476,216 L604,216 A26,26 0 0 0 656,216 L784,216 A26,26 0 0 1 836,216 L900,216" />
+    <path d="M0,432 L64,432 A26,26 0 0 0 116,432 L244,432 A26,26 0 0 1 296,432 L424,432 A26,26 0 0 0 476,432 L604,432 A26,26 0 0 1 656,432 L784,432 A26,26 0 0 0 836,432 L900,432" />
+    <path d="M0,648 L64,648 A26,26 0 0 1 116,648 L244,648 A26,26 0 0 0 296,648 L424,648 A26,26 0 0 1 476,648 L604,648 A26,26 0 0 0 656,648 L784,648 A26,26 0 0 1 836,648 L900,648" />
+    <path d="M0,864 L64,864 A26,26 0 0 0 116,864 L244,864 A26,26 0 0 1 296,864 L424,864 A26,26 0 0 0 476,864 L604,864 A26,26 0 0 1 656,864 L784,864 A26,26 0 0 0 836,864 L900,864" />
+  </g>
+</svg>

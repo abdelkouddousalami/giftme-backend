@@ -1,0 +1,128 @@
+/* ==========================================================================
+   GiftMe — Design tokens
+   Single source of truth for the visual language.
+   Change values here, never hardcode them in components.
+   ========================================================================== */
+
+:root {
+  /* --- Brand palette (raw) ------------------------------------------------ */
+  --ivory-blush: #fff7f3;
+  --blush-pink: #fad6dc;
+  --dusty-rose: #b44b5e;
+  --sage-green: #648a73;
+  --sage-mist: #e8efe6;
+  --caramel: #d4a373;
+  --charcoal: #2c2c2c;
+
+  /* --- Semantic colors ---------------------------------------------------- */
+  --color-bg: var(--ivory-blush);
+  --color-surface: #ffffff;
+  --color-surface-muted: #fdf3ee;
+  /* Sticky header fills — kept here so the header never hardcodes a colour */
+  --color-bg-veil: rgba(255, 247, 243, 0.86);
+  --color-bg-veil-strong: rgba(255, 247, 243, 0.95);
+
+  --color-primary: var(--dusty-rose);
+  --color-primary-strong: #93394a; /* hover / pressed */
+  --color-primary-light: var(--blush-pink);
+  --color-primary-tint: rgba(180, 75, 94, 0.08);
+
+  --color-secondary: var(--sage-green);
+  --color-secondary-strong: #4f7160; /* AA-compliant sage for text */
+  --color-secondary-light: var(--sage-mist);
+  --color-secondary-tint: rgba(100, 138, 115, 0.1);
+
+  --color-accent: var(--caramel);
+  --color-accent-tint: rgba(212, 163, 115, 0.16);
+
+  --color-text: var(--charcoal);
+  --color-text-muted: #6b6360; /* 5.5:1 on ivory */
+  --color-text-inverse: #fdf6f2;
+  --color-text-inverse-muted: rgba(253, 246, 242, 0.68);
+
+  --color-border: #ecdfd8;
+  --color-border-strong: #ddc9c0;
+  --color-white: #ffffff;
+
+  --color-focus: var(--dusty-rose);
+
+  /* --- Typography --------------------------------------------------------- */
+  --font-heading: 'Playfair Display', 'Iowan Old Style', 'Palatino Linotype',
+    Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Fluid display sizes — scale with the viewport, never overflow it */
+  --text-display-1: clamp(2.25rem, 6.2vw, 4.5rem);
+  --text-display-2: clamp(2rem, 4.4vw, 3.25rem);
+  --text-display-3: clamp(1.5rem, 2.6vw, 2.125rem);
+  --text-xl: clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-lg: 1.0625rem;
+  --text-base: 1rem;
+  --text-sm: 0.9375rem;
+  --text-xs: 0.8125rem;
+  --text-eyebrow: 0.75rem;
+
+  --leading-display: 1.06;
+  --leading-heading: 1.18;
+  --leading-body: 1.68;
+
+  --tracking-display: -0.02em;
+  --tracking-eyebrow: 0.18em;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* --- Spacing ------------------------------------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Vertical rhythm. Each section contributes `--section-y` top and bottom,
+     so the gap between two adjacent sections is twice this value. */
+  --section-y: clamp(2.75rem, 5.2vw, 4.75rem);
+  --section-y-lg: clamp(4rem, 7vw, 6.5rem);
+
+  /* --- Layout ------------------------------------------------------------- */
+  --container-width: 1200px;
+  --container-narrow: 780px;
+  --container-gutter: clamp(1.25rem, 5vw, 2.5rem);
+  --header-height: 64px;
+
+  /* --- Radius ------------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* --- Elevation (warm-tinted, deliberately soft) ------------------------- */
+  --shadow-xs: 0 1px 2px rgba(88, 52, 44, 0.06);
+  --shadow-sm: 0 2px 6px rgba(88, 52, 44, 0.06);
+  --shadow-md: 0 14px 34px -18px rgba(88, 52, 44, 0.32);
+  --shadow-lg: 0 34px 70px -34px rgba(88, 52, 44, 0.4);
+
+  /* --- Motion ------------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --transition-fast: 160ms var(--ease);
+  --transition-base: 260ms var(--ease);
+  --transition-slow: 700ms var(--ease);
+
+  /* --- Z-index ------------------------------------------------------------ */
+  --z-header: 100;
+  --z-overlay: 200;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --header-height: 76px;
+  }
+}

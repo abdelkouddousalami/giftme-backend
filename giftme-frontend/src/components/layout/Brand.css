@@ -1,0 +1,33 @@
+.brand {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.015em;
+  line-height: 1;
+  color: var(--color-text);
+  transition: opacity var(--transition-fast);
+}
+
+.brand:hover {
+  opacity: 0.75;
+}
+
+.brand__accent {
+  color: var(--color-primary);
+}
+
+.brand--md {
+  font-size: 1.5rem;
+}
+
+.brand--lg {
+  font-size: 1.9rem;
+}
+
+.brand--inverse {
+  color: var(--color-text-inverse);
+}
+
+.brand--inverse .brand__accent {
+  color: var(--color-primary-light);
+}

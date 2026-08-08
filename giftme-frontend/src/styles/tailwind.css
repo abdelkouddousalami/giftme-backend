@@ -1,0 +1,106 @@
+/* ==========================================================================
+   GiftMe — Tailwind v4 setup
+   --------------------------------------------------------------------------
+   Preflight is deliberately NOT imported. The reset already lives in
+   globals.css, and pulling Tailwind's base layer in would restyle the eight
+   sections below the hero that are still written in plain CSS. Importing only
+   `theme` + `utilities` keeps this change surgical.
+
+   Everything below is `@theme inline`, so utilities compile to the tokens in
+   tokens.css rather than to copies of their values. tokens.css stays the one
+   source of truth: change a colour there and both the CSS files and the
+   Tailwind utilities follow.
+   ========================================================================== */
+
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme inline {
+  /* Drop Tailwind's stock palette — only brand colours should be reachable. */
+  --color-*: initial;
+
+  --color-ivory: var(--color-bg);
+  --color-white: var(--color-white);
+  --color-cream: var(--color-surface-muted);
+  --color-blush: var(--color-primary-light);
+  --color-rose: var(--color-primary);
+  --color-rose-deep: var(--color-primary-strong);
+  --color-sage: var(--color-secondary);
+  --color-sage-deep: var(--color-secondary-strong);
+  --color-mist: var(--color-secondary-light);
+  --color-caramel: var(--color-accent);
+  --color-ink: var(--color-text);
+  --color-ink-soft: var(--color-text-muted);
+  --color-line: var(--color-border);
+  --color-line-strong: var(--color-border-strong);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-display: var(--font-heading);
+  --font-sans: var(--font-body);
+
+  --ease-brand: var(--ease);
+
+  --animate-drift-slow: gm-drift 11s var(--ease) infinite;
+  --animate-drift-slower: gm-drift 14s var(--ease) infinite;
+  --animate-hover-card: gm-hover-card 9s var(--ease) infinite;
+  --animate-thread: gm-thread 16s linear infinite;
+  --animate-draw: gm-draw 1.6s var(--ease) 0.9s both;
+  --animate-rise: gm-rise 0.9s var(--ease) both;
+}
+
+/* --- Keyframes ------------------------------------------------------------
+   Amplitudes are deliberately tiny: a few pixels over several seconds reads as
+   "alive", anything more reads as a banner ad. globals.css already disables
+   every animation under prefers-reduced-motion. */
+
+@keyframes gm-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--gm-tilt, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -7px, 0) rotate(calc(var(--gm-tilt, 0deg) + 1.2deg));
+  }
+}
+
+@keyframes gm-hover-card {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+/* The announcement bar's one moving detail: a hairline travelling the width */
+@keyframes gm-thread {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes gm-draw {
+  from {
+    stroke-dashoffset: var(--gm-dash, 160);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes gm-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

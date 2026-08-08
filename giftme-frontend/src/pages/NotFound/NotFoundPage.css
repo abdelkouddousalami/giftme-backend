@@ -1,0 +1,43 @@
+.not-found {
+  padding-block: var(--section-y-lg);
+}
+
+.not-found__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  min-height: 46vh;
+}
+
+.not-found__title {
+  font-size: var(--text-display-2);
+}
+
+.not-found__title em {
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.not-found__lead {
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+.not-found__path {
+  padding: 0.15em 0.5em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  color: var(--color-text);
+  background-color: var(--color-secondary-light);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}

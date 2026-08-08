@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <defs>
+    <linearGradient id="ppSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4C2CC" />
+      <stop offset="0.45" stop-color="#FADDD8" />
+      <stop offset="1" stop-color="#FCEFE4" />
+    </linearGradient>
+    <linearGradient id="ppHill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7FA48D" />
+      <stop offset="1" stop-color="#557966" />
+    </linearGradient>
+    <clipPath id="ppBoard">
+      <rect x="112" y="200" width="576" height="480" rx="10" />
+    </clipPath>
+    <clipPath id="ppPiece">
+      <path d="M566,742 L616,742 A20,20 0 0 1 656,742 L706,742 L706,792 A20,20 0 0 1 706,832 L706,882 L566,882 Z" />
+    </clipPath>
+  </defs>
+
+  <circle cx="400" cy="440" r="300" fill="#FAD6DC" opacity="0.5" />
+
+  <g clip-path="url(#ppBoard)">
+    <rect x="112" y="200" width="576" height="480" fill="url(#ppSky)" />
+    <circle cx="546" cy="312" r="52" fill="#D4A373" />
+    <path d="M112 488c110-40 190 16 292 4s170-40 284-16v204H112z" fill="#A9C2B0" />
+    <path d="M112 550c126-40 206 20 306 6s176-34 270-12v136H112z" fill="url(#ppHill)" />
+    <g fill="#3B5648">
+      <circle cx="330" cy="504" r="18" />
+      <path d="M330 526c17 0 27 14 29 38l7 64h-72l7-64c2-24 12-38 29-38z" />
+      <circle cx="404" cy="492" r="20" />
+      <path d="M404 516c19 0 30 16 32 42l7 70h-78l7-70c2-26 13-42 32-42z" />
+    </g>
+  </g>
+
+  <g stroke="#FFF7F3" stroke-width="3" fill="none" opacity="0.6" stroke-linecap="round">
+    <path d="M256,200 L256,262 A18,18 0 0 1 256,298 L256,422 A18,18 0 0 0 256,458 L256,582 A18,18 0 0 1 256,618 L256,680" />
+    <path d="M400,200 L400,262 A18,18 0 0 0 400,298 L400,422 A18,18 0 0 1 400,458 L400,582 A18,18 0 0 0 400,618 L400,680" />
+    <path d="M544,200 L544,262 A18,18 0 0 1 544,298 L544,422 A18,18 0 0 0 544,458 L544,582 A18,18 0 0 1 544,618 L544,680" />
+    <path d="M112,360 L166,360 A18,18 0 0 1 202,360 L310,360 A18,18 0 0 0 346,360 L454,360 A18,18 0 0 1 490,360 L598,360 A18,18 0 0 0 634,360 L688,360" />
+    <path d="M112,520 L166,520 A18,18 0 0 0 202,520 L310,520 A18,18 0 0 1 346,520 L454,520 A18,18 0 0 0 490,520 L598,520 A18,18 0 0 1 634,520 L688,520" />
+  </g>
+
+  <rect x="112" y="200" width="576" height="480" rx="10" fill="none" stroke="#FFFFFF" stroke-width="12" />
+
+  <g clip-path="url(#ppPiece)">
+    <rect x="560" y="715" width="180" height="180" fill="#F7D8D6" />
+    <circle cx="618" cy="772" r="24" fill="#D4A373" />
+    <path d="M560 822c46-16 76 10 120 0s70-12 110 4v80H560z" fill="url(#ppHill)" />
+  </g>
+  <path d="M566,742 L616,742 A20,20 0 0 1 656,742 L706,742 L706,792 A20,20 0 0 1 706,832 L706,882 L566,882 Z" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round" />
+</svg>

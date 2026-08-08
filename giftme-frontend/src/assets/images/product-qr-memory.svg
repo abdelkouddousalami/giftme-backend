@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <defs>
+    <linearGradient id="qmSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2BFC9" />
+      <stop offset="1" stop-color="#FBE7DA" />
+    </linearGradient>
+    <clipPath id="qmPhoto">
+      <rect x="196" y="236" width="268" height="300" rx="6" />
+    </clipPath>
+  </defs>
+
+  <circle cx="400" cy="470" r="292" fill="#E8EFE6" opacity="0.85" />
+
+  <g transform="rotate(-8 330 400)">
+    <rect x="180" y="220" width="300" height="360" rx="10" fill="#FFFFFF" />
+    <g clip-path="url(#qmPhoto)">
+      <rect x="196" y="236" width="268" height="300" fill="url(#qmSky)" />
+      <circle cx="392" cy="318" r="40" fill="#D4A373" />
+      <path d="M196 420c58-22 96 12 152 2s76-14 116 4v110H196z" fill="#7FA48D" />
+      <g fill="#3B5648">
+        <circle cx="288" cy="422" r="17" />
+        <path d="M288 444c16 0 25 13 27 35l6 57h-66l6-57c2-22 11-35 27-35z" />
+      </g>
+    </g>
+  </g>
+
+  <g transform="rotate(5 470 630)">
+    <rect x="326" y="430" width="308" height="392" rx="14" fill="#FFFFFF" />
+    <rect x="326" y="430" width="308" height="392" rx="14" fill="none" stroke="#EFE0D8" stroke-width="3" />
+
+    <g transform="translate(370 468) scale(1.1)">
+      <g fill="#2C2C2C">
+        <path d="M10 10h60v60H10z" />
+        <path d="M130 10h60v60h-60z" />
+        <path d="M10 130h60v60H10z" />
+      </g>
+      <g fill="#FFFFFF">
+        <path d="M20 20h40v40H20z" />
+        <path d="M140 20h40v40h-40z" />
+        <path d="M20 140h40v40H20z" />
+      </g>
+      <g fill="#2C2C2C">
+        <path d="M30 30h20v20H30z" />
+        <path d="M150 30h20v20h-20z" />
+        <path d="M30 150h20v20H30z" />
+        <path d="M90 10h20v20H90z" />
+        <path d="M70 30h20v20H70z" />
+        <path d="M110 30h20v20h-20z" />
+        <path d="M90 50h20v20H90z" />
+        <path d="M10 90h20v20H10z" />
+        <path d="M50 90h20v20H50z" />
+        <path d="M90 90h20v20H90z" />
+        <path d="M130 90h20v20h-20z" />
+        <path d="M170 90h20v20h-20z" />
+        <path d="M30 110h20v20H30z" />
+        <path d="M70 110h20v20H70z" />
+        <path d="M110 110h20v20h-20z" />
+        <path d="M150 110h20v20h-20z" />
+        <path d="M90 130h20v20H90z" />
+        <path d="M130 130h20v20h-20z" />
+        <path d="M170 130h20v20h-20z" />
+        <path d="M110 150h20v20h-20z" />
+        <path d="M150 150h20v20h-20z" />
+        <path d="M90 170h20v20H90z" />
+        <path d="M130 170h20v20h-20z" />
+        <path d="M170 170h20v20h-20z" />
+      </g>
+    </g>
+
+    <g fill="#E3D3CB">
+      <rect x="392" y="716" width="176" height="10" rx="5" />
+      <rect x="424" y="740" width="112" height="10" rx="5" />
+    </g>
+    <path d="M480 782c-19-14-33-24-33-38a12.7 12.7 0 0 1 23.5-7 12.7 12.7 0 0 1 23.5 7c0 14-14 24-33 38z" fill="#B44B5E" />
+  </g>
+</svg>

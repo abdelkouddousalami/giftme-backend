@@ -1,0 +1,215 @@
+.gift-finder {
+  padding-block: var(--section-y);
+}
+
+.gift-finder__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: clamp(1.5rem, 4vw, 3.25rem);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.gift-finder__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.gift-finder__title {
+  font-size: var(--text-display-3);
+}
+
+.gift-finder__lead {
+  max-width: 48ch;
+  color: var(--color-text-muted);
+}
+
+/* --- Questions ------------------------------------------------------------ */
+
+.gift-finder__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.gift-finder__questions {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.gift-finder__group {
+  min-width: 0; /* fieldsets default to min-content and break grid layout */
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.gift-finder__legend {
+  padding: 0;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.gift-finder__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.gift-finder__chip {
+  position: relative;
+  display: inline-flex;
+}
+
+.gift-finder__chip-label {
+  display: inline-block;
+  padding: 0.55rem 1.1rem;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.gift-finder__chip:hover .gift-finder__chip-label {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.gift-finder__chip input:checked + .gift-finder__chip-label {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.gift-finder__chip input:focus-visible + .gift-finder__chip-label {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.gift-finder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.gift-finder__error {
+  font-size: var(--text-sm);
+  color: var(--color-primary-strong);
+}
+
+/* --- Result --------------------------------------------------------------- */
+
+.gift-finder__result:empty {
+  display: none;
+}
+
+.gift-finder__match {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: var(--space-5);
+  align-items: center;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  animation: gift-finder-in 420ms var(--ease);
+}
+
+.gift-finder__match-image {
+  width: 96px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-muted);
+}
+
+.gift-finder__match-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.gift-finder__match-summary {
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-secondary-strong);
+}
+
+.gift-finder__match-name {
+  font-size: var(--text-display-3);
+}
+
+.gift-finder__match-reason {
+  max-width: 52ch;
+  color: var(--color-text-muted);
+}
+
+.gift-finder__match-price {
+  font-weight: var(--weight-medium);
+}
+
+.gift-finder__match-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+.gift-finder__match-link svg {
+  transition: transform var(--transition-fast);
+}
+
+.gift-finder__match-link:hover {
+  color: var(--color-primary-strong);
+}
+
+.gift-finder__match-link:hover svg {
+  transform: translateX(3px);
+}
+
+@keyframes gift-finder-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (min-width: 700px) {
+  .gift-finder__questions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-finder__match {
+    grid-template-columns: 132px 1fr;
+    gap: var(--space-6);
+  }
+
+  .gift-finder__match-image {
+    width: 132px;
+    height: 165px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gift-finder__questions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+}

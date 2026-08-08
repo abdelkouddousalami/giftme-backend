@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" width="220" height="220">
+  <defs>
+    <linearGradient id="ppcSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4C2CC" />
+      <stop offset="1" stop-color="#FCEFE4" />
+    </linearGradient>
+    <clipPath id="ppcShape">
+      <path d="M30,30 L84,30 A26,26 0 0 1 136,30 L190,30 L190,84 A26,26 0 0 1 190,136 L190,190 L136,190 A26,26 0 0 0 84,190 L30,190 L30,136 A26,26 0 0 0 30,84 Z" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#ppcShape)">
+    <rect x="0" y="0" width="220" height="220" fill="url(#ppcSky)" />
+    <circle cx="148" cy="76" r="30" fill="#D4A373" />
+    <path d="M0 132c46-18 78 8 122-2s66-10 98 4v96H0z" fill="#7FA48D" />
+    <g fill="#3B5648">
+      <circle cx="78" cy="122" r="16" />
+      <path d="M78 142c15 0 24 12 26 32l5 46H47l5-46c2-20 11-32 26-32z" />
+    </g>
+  </g>
+  <path d="M30,30 L84,30 A26,26 0 0 1 136,30 L190,30 L190,84 A26,26 0 0 1 190,136 L190,190 L136,190 A26,26 0 0 0 84,190 L30,190 L30,136 A26,26 0 0 0 30,84 Z" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round" />
+</svg>
