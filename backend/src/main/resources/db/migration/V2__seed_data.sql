@@ -1,16 +1,17 @@
 -- ============================================================================
 -- Seed data: default admin account + initial catalog
 --
--- SECURITY: change this password immediately after first login in any
--- non-throwaway environment. Password is "ChangeMe!2026" (bcrypt hash below).
+-- SECURITY: this password is committed to source control - fine for local/dev
+-- use, but change it immediately in any shared or production environment.
+-- Login identifier "aelalami" / password "abdo@3214" (bcrypt hash below).
 -- ============================================================================
 
 INSERT INTO users (email, full_name, phone, password_hash, role, enabled)
 VALUES (
-    'admin@giftme.ma',
+    'aelalami',
     'GiftMe Admin',
     NULL,
-    '$2a$10$toknbZcS4BezveDYym2DFODKKSkuuPGppP7mVn6.mtgDf7S/RfdzW',
+    '$2a$10$lR4r6xiGET2yE7tqVJ/XnOFYnRk0zKQjDfFi3CRSqR9r87Q0l07nC',
     'ADMIN',
     TRUE
 );

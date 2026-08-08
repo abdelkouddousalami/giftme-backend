@@ -50,7 +50,7 @@ docker compose --env-file .env up --build
 ```
 
 This starts PostgreSQL and the API together. Flyway runs automatically on startup, creating the schema and seeding:
-- an admin account (`admin@giftme.ma`, see [Database setup](#database-setup) for the password)
+- an admin account (`aelalami`, see [Database setup](#database-setup) for the password)
 - the three initial products (Personalized Puzzle, Personalized Mug, QR Memory Experience)
 
 API available at `http://localhost:8080`.
@@ -94,8 +94,8 @@ Schema and seed data are managed entirely by **Flyway** (`src/main/resources/db/
 - `V1__init_schema.sql` — all tables, foreign keys, check constraints, and the indexes called out in the spec (`product.slug`, `order.orderNumber`, `order.trackingCode`, `order.phone`, `memory.publicCode`, `order.status`, `order.createdAt`).
 - `V2__seed_data.sql` — a default admin account and the three initial products.
 
-**Default admin login:** `admin@giftme.ma` / `ChangeMe!2026`
-**Change this password immediately in any non-throwaway environment** — the seeded bcrypt hash is public (it's sitting in this repo's migration file).
+**Default admin login:** `aelalami` / `abdo@3214`
+**Change this password immediately in any non-throwaway environment** — the seeded bcrypt hash is public (it's sitting in this repo's migration file). The login identifier isn't required to be a real email format (see `LoginRequest`) - it's just matched against `users.email` as an opaque string.
 
 Public self-registration (`POST /api/auth/register`) can only ever create a `CUSTOMER` account — there's no way to mint an admin account through the API by design. Additional admins must be seeded via a migration or created directly in the database.
 
@@ -157,11 +157,13 @@ GET    /api/auth/me
 
 **Admin only** (`ROLE_ADMIN`):
 ```
+GET    /api/admin/products                  (includes inactive products - added beyond the original spec, see note below)
 POST   /api/admin/products
 PUT    /api/admin/products/{id}
 DELETE /api/admin/products/{id}
 PATCH  /api/admin/products/{id}/status
 
+GET    /api/admin/memories                  (paginated list - added beyond the original spec, see note below)
 GET    /api/admin/memories/{id}             (added beyond the original spec - see note below)
 POST   /api/admin/memories
 PUT    /api/admin/memories/{id}
@@ -182,7 +184,7 @@ GET    /api/admin/dashboard/orders-chart
 GET    /api/admin/dashboard/top-products
 ```
 
-> **Note:** `GET /api/admin/memories/{id}` isn't in the original endpoint list but was added — a CRUD resource is unusable from an admin UI without a way to fetch a memory's current data before editing it. Everything else matches the spec exactly.
+> **Note:** `GET /api/admin/products`, `GET /api/admin/memories` and `GET /api/admin/memories/{id}` aren't in the original endpoint list but were added — a CRUD resource is unusable from an admin UI without a way to list/fetch current data (and the public `GET /api/products` always filters to active-only, which would make deactivated products unreachable and unrecoverable from an admin screen). Everything else matches the spec exactly.
 
 Full request/response schemas: Swagger UI.
 

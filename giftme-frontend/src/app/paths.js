@@ -24,6 +24,8 @@ export const paths = {
     dashboard: '/admin',
     products: '/admin/products',
     orders: '/admin/orders',
+    orderDetail: (id) => `/admin/orders/${id}`,
+    tracking: '/admin/tracking',
     customers: '/admin/customers',
     memories: '/admin/memories',
   },

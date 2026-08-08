@@ -1,6 +1,7 @@
 package com.giftme.controller;
 
 import com.giftme.common.response.ApiResponse;
+import com.giftme.common.response.PagedResponse;
 import com.giftme.dto.product.ProductRequest;
 import com.giftme.dto.product.ProductResponse;
 import com.giftme.dto.product.ProductStatusRequest;
@@ -10,14 +11,18 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +34,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminProductController {
 
     private final ProductService productService;
+
+    @GetMapping
+    @Operation(summary = "List all products, including inactive ones", description = "Not in the original spec's endpoint list, but added since the public listing always filters to active-only and an admin screen needs to see (and reactivate) inactive products too.")
+    public ApiResponse<PagedResponse<ProductResponse>> list(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
+            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ApiResponse.success(productService.adminList(category, search, pageable));
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

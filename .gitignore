@@ -1,0 +1,22 @@
+# Build output (backend/ and giftme-frontend/ have their own; this catches anything
+# run from the repo root by mistake, e.g. `mvn` invoked outside backend/).
+target/
+dist/
+node_modules/
+
+# Claude Code local session state - machine-specific, not shared.
+.claude/
+
+# Env files
+.env
+.env.local
+
+# Logs
+*.log
+
+# Editor / OS
+.idea/
+.vscode/
+*.iml
+*.swp
+.DS_Store

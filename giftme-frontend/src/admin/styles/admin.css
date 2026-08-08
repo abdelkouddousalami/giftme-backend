@@ -1,0 +1,43 @@
+/* ==========================================================================
+   GiftMe Admin — isolated Tailwind entry point.
+
+   The storefront's tailwind.css (src/styles/tailwind.css) intentionally
+   drops Tailwind's stock color palette (`--color-*: initial`) and remaps
+   everything to the brand's own token names (rose, sage, caramel, ivory…),
+   and it intentionally skips Preflight so it doesn't restyle the plain-CSS
+   marketing sections. The admin dashboard is a different kind of UI (dense
+   data tables, forms, status badges) and was built against Tailwind's stock
+   palette (indigo/slate/red/amber/green) - reusing tailwind.css as-is would
+   make every admin utility class that names a stock color resolve to nothing.
+
+   This file is Tailwind v4's supported way to have two independently themed
+   "apps" share one build: importing `theme.css` + `utilities.css` here (not
+   the `tailwindcss` package's Preflight layer) gives the admin section the
+   *full* stock color palette, generated into its own stylesheet, without
+   touching or being touched by the storefront's `@theme inline` overrides.
+   Preflight is skipped for the same reason the storefront skips it: a global
+   CSS reset loaded here would leak into the storefront's DOM too (CSS is
+   document-wide regardless of which route mounted the component that
+   imported it), and this app already ships without one.
+
+   Only import this file from within src/admin/ - never from the storefront.
+   ========================================================================== */
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css';
+
+/* globals.css (shared, document-wide) styles bare h1-h4 tags with the storefront's display
+   serif ('Playfair Display', for its editorial gift-shop branding). That rule is an element
+   selector so it reaches every heading in the document, including these - overriding just
+   font-family here (nothing else globals.css sets) keeps admin headings on the plain sans
+   stack the Apple-style design calls for, without touching the margin/line-height reset that
+   rule also provides, which admin still wants. Scoped to .admin-shell (added to the root of
+   both AdminLayout and LoginPage) so the storefront is untouched. */
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3,
+.admin-shell h4,
+.admin-shell h5,
+.admin-shell h6 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}

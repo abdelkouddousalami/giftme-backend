@@ -31,9 +31,17 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public PagedResponse<ProductResponse> list(String category, String search, Pageable pageable) {
         // Public catalog listing only ever shows active products - inactive products are
-        // still reachable by direct id/slug lookup (used by admin edit screens).
+        // still reachable by direct id/slug lookup, and by admins via adminList below.
         Page<Product> page = productRepository.findAll(
                 ProductSpecifications.withFilters(category, true, search), pageable);
+        return PagedResponse.of(page, ProductMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<ProductResponse> adminList(String category, String search, Pageable pageable) {
+        Page<Product> page = productRepository.findAll(
+                ProductSpecifications.withFilters(category, null, search), pageable);
         return PagedResponse.of(page, ProductMapper::toResponse);
     }
 

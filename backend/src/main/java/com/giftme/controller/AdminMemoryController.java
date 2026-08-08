@@ -1,6 +1,7 @@
 package com.giftme.controller;
 
 import com.giftme.common.response.ApiResponse;
+import com.giftme.common.response.PagedResponse;
 import com.giftme.dto.memory.MemoryRequest;
 import com.giftme.dto.memory.MemoryResponse;
 import com.giftme.service.MemoryService;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminMemoryController {
 
     private final MemoryService memoryService;
+
+    @GetMapping
+    @Operation(summary = "List memories", description = "Not in the original spec's endpoint list, but added since an admin memory management screen needs a way to list memories in the first place.")
+    public ApiResponse<PagedResponse<MemoryResponse>> list(@PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ApiResponse.success(memoryService.list(pageable));
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a memory by internal id", description = "Not in the original spec's endpoint list, but added since PUT/DELETE are unusable without a way to first fetch a memory's current data for an admin edit screen.")

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.giftme.common.exception.ResourceNotFoundException;
+import com.giftme.common.response.PagedResponse;
 import com.giftme.config.GiftMeProperties;
 import com.giftme.domain.Memory;
 import com.giftme.dto.memory.MemoryRequest;
@@ -21,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
 class MemoryServiceImplTest {
@@ -41,6 +44,19 @@ class MemoryServiceImplTest {
                 "https://giftme.ma"
         );
         memoryService = new MemoryServiceImpl(memoryRepository, properties);
+    }
+
+    @Test
+    void list_mapsPageOfMemoriesToResponses() {
+        Memory memory = Memory.builder().publicCode("abc123").title("A Memory").active(true).build();
+        when(memoryRepository.findAll(PageRequest.of(0, 20)))
+                .thenReturn(new PageImpl<>(List.of(memory), PageRequest.of(0, 20), 1));
+
+        PagedResponse<MemoryResponse> response = memoryService.list(PageRequest.of(0, 20));
+
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).publicCode()).isEqualTo("abc123");
+        assertThat(response.getTotalElements()).isEqualTo(1);
     }
 
     @Test

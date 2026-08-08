@@ -10,6 +10,9 @@ public interface ProductService {
 
     PagedResponse<ProductResponse> list(String category, String search, Pageable pageable);
 
+    /** Unlike {@link #list}, includes inactive products - for the admin product management screen. */
+    PagedResponse<ProductResponse> adminList(String category, String search, Pageable pageable);
+
     ProductResponse getById(Long id);
 
     ProductResponse getBySlug(String slug);

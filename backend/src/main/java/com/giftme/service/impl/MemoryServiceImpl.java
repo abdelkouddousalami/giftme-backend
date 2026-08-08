@@ -2,6 +2,7 @@ package com.giftme.service.impl;
 
 import com.giftme.common.exception.ErrorCode;
 import com.giftme.common.exception.ResourceNotFoundException;
+import com.giftme.common.response.PagedResponse;
 import com.giftme.common.util.RandomCodeGenerator;
 import com.giftme.config.GiftMeProperties;
 import com.giftme.domain.Memory;
@@ -13,6 +14,8 @@ import com.giftme.repository.MemoryRepository;
 import com.giftme.service.MemoryService;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,13 @@ public class MemoryServiceImpl implements MemoryService {
                 .filter(Memory::isActive)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.MEMORY_NOT_FOUND, "Memory not found"));
         return MemoryMapper.toPublicResponse(memory);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<MemoryResponse> list(Pageable pageable) {
+        Page<Memory> page = memoryRepository.findAll(pageable);
+        return PagedResponse.of(page, memory -> MemoryMapper.toResponse(memory, properties.publicBaseUrl()));
     }
 
     @Override

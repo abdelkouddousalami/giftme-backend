@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: giftme
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "abdo@3214"
+      MYSQL_DATABASE: "giftme"
+      MYSQL_USER: "aelalami"
+      MYSQL_PASSWORD: "abdo@3214"
+    ports:
+      - "3307:3306"
+    volumes:
+      - giftme_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pabdo@3214"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  giftme_mysql_data:
