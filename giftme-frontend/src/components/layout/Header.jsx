@@ -1,35 +1,45 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
-import Brand from './Brand.jsx'
+import BrandLogo from '../common/BrandLogo.jsx'
 import { primaryNav } from '../../data/navigation.js'
 import { paths } from '../../app/paths.js'
-import './Header.css'
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+/** Quiet 40px target: no chrome at rest, a soft rose disc on hover. */
+const ICON_BUTTON =
+  'inline-flex h-10 w-10 items-center justify-center rounded-(--radius-pill) text-ink transition-colors duration-200 hover:bg-rose-tint hover:text-rose'
+
 /** Shared by the desktop drawer and the mobile menu — declared once. */
 function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
   return (
-    <form className="header-search" role="search" onSubmit={onSubmit}>
+    <form
+      className="m-0 flex items-center gap-3 rounded-(--radius-pill) border border-line bg-ivory py-2 pr-2 pl-4 transition-colors duration-200 focus-within:border-rose"
+      role="search"
+      onSubmit={onSubmit}
+    >
       <label className="sr-only" htmlFor={id}>
         Search gifts
       </label>
-      <Icon name="search" size={18} className="header-search__icon" />
+      <Icon name="search" size={18} className="shrink-0 text-ink-soft" />
       <input
         id={id}
         ref={inputRef}
-        className="header-search__input"
+        className="min-w-0 flex-1 appearance-none border-0 bg-transparent py-2 text-sm outline-none placeholder:text-ink-soft"
         type="search"
         placeholder="Search puzzles, mugs, QR memories…"
         value={value}
         onChange={onChange}
         autoComplete="off"
       />
-      <button type="submit" className="header-search__submit">
+      <button
+        type="submit"
+        className="shrink-0 rounded-(--radius-pill) bg-rose px-[1.15rem] py-[0.55rem] text-sm font-medium text-white transition-colors duration-200 hover:bg-rose-deep"
+      >
         Search
       </button>
     </form>
@@ -40,11 +50,13 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [menuTop, setMenuTop] = useState(null)
   const [query, setQuery] = useState('')
 
   const location = useLocation()
   const navigate = useNavigate()
 
+  const headerRef = useRef(null)
   const menuButtonRef = useRef(null)
   const searchButtonRef = useRef(null)
   const menuPanelRef = useRef(null)
@@ -55,7 +67,19 @@ function Header() {
   const desktopSearchInputId = useId()
   const mobileSearchInputId = useId()
 
-  // Thin border once the page leaves the very top.
+  /**
+   * The menu is a fixed overlay, so it needs to start where the header ends —
+   * and that is not a constant: at the top of the page the announcement bar is
+   * still above the header, once scrolled it is not. Measured rather than
+   * assumed.
+   */
+  const measureMenuTop = useCallback(() => {
+    const bottom = headerRef.current?.getBoundingClientRect().bottom
+
+    if (typeof bottom === 'number') setMenuTop(Math.round(bottom))
+  }, [])
+
+  // Thin border and a more opaque veil once the page leaves the very top.
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 8)
 
@@ -75,9 +99,13 @@ function Header() {
     if (!isMenuOpen) return undefined
 
     document.body.classList.add('is-scroll-locked')
+    window.addEventListener('resize', measureMenuTop)
 
-    return () => document.body.classList.remove('is-scroll-locked')
-  }, [isMenuOpen])
+    return () => {
+      document.body.classList.remove('is-scroll-locked')
+      window.removeEventListener('resize', measureMenuTop)
+    }
+  }, [isMenuOpen, measureMenuTop])
 
   // Escape closes whichever overlay is open and returns focus to its trigger.
   useEffect(() => {
@@ -123,8 +151,10 @@ function Header() {
     const onKeyDown = (event) => {
       if (event.key !== 'Tab') return
 
-      const cycle = [menuButtonRef.current, ...panel.querySelectorAll(FOCUSABLE)]
-        .filter(Boolean)
+      const cycle = [
+        menuButtonRef.current,
+        ...panel.querySelectorAll(FOCUSABLE),
+      ].filter(Boolean)
 
       if (cycle.length === 0) return
 
@@ -161,97 +191,139 @@ function Header() {
   const handleQueryChange = (event) => setQuery(event.target.value)
   const closeMenu = () => setIsMenuOpen(false)
 
+  const toggleMenu = () => {
+    setIsMenuOpen((open) => {
+      if (!open) measureMenuTop()
+
+      return !open
+    })
+  }
+
   return (
-    <header className={`header${isScrolled ? ' header--scrolled' : ''}`}>
-      <Container className="header__bar">
-        <Brand />
-
-        <nav className="header__nav" aria-label="Main">
-          <ul className="header__nav-list">
-            {primaryNav.map((item) => (
-              <li key={item.id}>
-                <Link className="header__nav-link" to={item.to}>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="header__actions">
-          <button
-            type="button"
-            ref={searchButtonRef}
-            className="header__icon-button header__icon-button--desktop"
-            aria-expanded={isSearchOpen}
-            aria-controls={searchPanelId}
-            onClick={() => setIsSearchOpen((open) => !open)}
-          >
-            <Icon name={isSearchOpen ? 'close' : 'search'} size={20} />
-            <span className="sr-only">
-              {isSearchOpen ? 'Close search' : 'Search gifts'}
-            </span>
-          </button>
-
-          <Link to={paths.cart} className="header__icon-button">
-            <Icon name="bag" size={20} />
-            <span className="sr-only">Cart</span>
-          </Link>
-
-          <Button to={paths.shop} size="sm" className="header__cta">
-            Create Your Gift
-          </Button>
-
-          <button
-            type="button"
-            ref={menuButtonRef}
-            className="header__icon-button header__icon-button--menu"
-            aria-expanded={isMenuOpen}
-            aria-controls={menuId}
-            onClick={() => setIsMenuOpen((open) => !open)}
-          >
-            <Icon name={isMenuOpen ? 'close' : 'menu'} size={22} />
-            <span className="sr-only">
-              {isMenuOpen ? 'Close menu' : 'Open menu'}
-            </span>
-          </button>
-        </div>
-      </Container>
-
-      <div
-        id={searchPanelId}
-        className="header__search-panel"
-        hidden={!isSearchOpen}
+    <>
+      <header
+        ref={headerRef}
+        className={`sticky top-0 z-(--z-header) border-b backdrop-blur-[14px] backdrop-saturate-150 transition-[background-color,border-color] duration-300 ${
+          isScrolled
+            ? 'border-line bg-(--color-bg-veil-strong)'
+            : 'border-transparent bg-(--color-bg-veil)'
+        }`}
       >
-        <Container>
-          <SearchForm
-            id={desktopSearchInputId}
-            inputRef={desktopSearchRef}
-            value={query}
-            onChange={handleQueryChange}
-            onSubmit={handleSearchSubmit}
-          />
-        </Container>
-      </div>
+        <Container className="flex min-h-(--header-height) items-center justify-between gap-5 nav:grid nav:grid-cols-[1fr_auto_1fr]">
+          <div className="flex items-center">
+            <BrandLogo />
+          </div>
 
+          <nav className="hidden nav:block" aria-label="Main">
+            <ul className="flex items-center gap-8">
+              {primaryNav.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    className="group relative inline-block py-2 text-[0.95rem] text-ink-soft transition-colors duration-200 hover:text-rose"
+                    to={item.to}
+                  >
+                    {item.label}
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 bottom-0.5 block h-px origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="flex items-center justify-end gap-1">
+            <span className="hidden nav:block">
+              <button
+                type="button"
+                ref={searchButtonRef}
+                className={ICON_BUTTON}
+                aria-expanded={isSearchOpen}
+                aria-controls={searchPanelId}
+                onClick={() => setIsSearchOpen((open) => !open)}
+              >
+                <Icon name={isSearchOpen ? 'close' : 'search'} size={20} />
+                <span className="sr-only">
+                  {isSearchOpen ? 'Close search' : 'Search gifts'}
+                </span>
+              </button>
+            </span>
+
+            <Link to={paths.cart} className={ICON_BUTTON}>
+              <Icon name="bag" size={20} />
+              <span className="sr-only">Cart</span>
+            </Link>
+
+            <span
+              aria-hidden="true"
+              className="mx-2 hidden h-5 w-px bg-line nav:block"
+            />
+
+            <div className="hidden nav:block">
+              <Button to={paths.shop} variant="outline" size="sm">
+                Create Your Gift
+              </Button>
+            </div>
+
+            <button
+              type="button"
+              ref={menuButtonRef}
+              className={`${ICON_BUTTON} nav:hidden`}
+              aria-expanded={isMenuOpen}
+              aria-controls={menuId}
+              onClick={toggleMenu}
+            >
+              <Icon name={isMenuOpen ? 'close' : 'menu'} size={22} />
+              <span className="sr-only">
+                {isMenuOpen ? 'Close menu' : 'Open menu'}
+              </span>
+            </button>
+          </div>
+        </Container>
+
+        <div
+          id={searchPanelId}
+          className="animate-drawer border-t border-line bg-white py-4"
+          hidden={!isSearchOpen}
+        >
+          <Container>
+            <SearchForm
+              id={desktopSearchInputId}
+              inputRef={desktopSearchRef}
+              value={query}
+              onChange={handleQueryChange}
+              onSubmit={handleSearchSubmit}
+            />
+          </Container>
+        </div>
+      </header>
+
+      {/* Outside <header> on purpose: the header's backdrop-filter makes it a
+          containing block for fixed positioning, which would pin this overlay
+          to the header's own 64px box instead of the viewport. */}
       <div
         id={menuId}
         ref={menuPanelRef}
-        className="header__mobile-menu"
+        className="animate-fade fixed inset-x-0 bottom-0 z-(--z-overlay) overflow-y-auto border-t border-line bg-ivory outline-none nav:hidden"
+        style={{ top: menuTop ?? 'var(--header-height)' }}
         hidden={!isMenuOpen}
         tabIndex={-1}
         aria-label="Menu"
       >
-        <Container className="header__mobile-inner">
+        <Container className="flex flex-col gap-6 pt-6 pb-16">
           <nav aria-label="Mobile">
-            <ul className="header__mobile-list">
-              {primaryNav.map((item) => (
+            <ul className="flex flex-col">
+              {primaryNav.map((item, index) => (
                 <li key={item.id}>
                   <Link
-                    className="header__mobile-link"
+                    className="flex items-baseline gap-4 border-b border-line py-4 font-display text-[1.6rem] transition-colors duration-200 hover:text-rose"
                     to={item.to}
                     onClick={closeMenu}
                   >
+                    <span className="font-sans text-[0.68rem] tracking-[0.2em] text-caramel">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
                     {item.label}
                   </Link>
                 </li>
@@ -276,10 +348,12 @@ function Header() {
             Create Your Gift
           </Button>
 
-          <p className="header__mobile-note">More than a gift, a memory.</p>
+          <p className="font-display text-(length:--text-lg) italic text-ink-soft">
+            More than a gift, a memory.
+          </p>
         </Container>
       </div>
-    </header>
+    </>
   )
 }
 

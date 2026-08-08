@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom'
+import AnnouncementBar from './AnnouncementBar.jsx'
 import Header from './Header.jsx'
 import Footer from './Footer.jsx'
 import useRouteScroll from '../../hooks/useRouteScroll.js'
 
-/** Storefront shell: skip link, header, routed page, footer. */
+/** Storefront shell: skip link, announcement, header, routed page, footer. */
 function RootLayout() {
   useRouteScroll()
 
@@ -12,6 +13,8 @@ function RootLayout() {
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
+
+      <AnnouncementBar />
 
       <Header />
 

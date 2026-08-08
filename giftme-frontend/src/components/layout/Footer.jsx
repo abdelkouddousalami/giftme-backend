@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import Container from '../common/Container.jsx'
 import Icon from '../common/Icon.jsx'
-import Brand from './Brand.jsx'
+import BrandLogo from '../common/BrandLogo.jsx'
 import { footerNav, socialLinks } from '../../data/navigation.js'
 import './Footer.css'
 
@@ -13,7 +13,7 @@ function Footer() {
       <Container>
         <div className="footer__top">
           <div className="footer__brand">
-            <Brand tone="inverse" size="lg" />
+            <BrandLogo tone="inverse" size="lg" />
             <p className="footer__tagline">More than a gift, a memory.</p>
 
             <ul className="footer__social">

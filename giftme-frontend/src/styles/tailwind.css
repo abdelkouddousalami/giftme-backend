@@ -1,20 +1,32 @@
+@layer theme;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css';
+
 /* ==========================================================================
    GiftMe — Tailwind v4 setup
    --------------------------------------------------------------------------
-   Preflight is deliberately NOT imported. The reset already lives in
+   Preflight is deliberately NOT imported above. The reset already lives in
    globals.css, and pulling Tailwind's base layer in would restyle the eight
-   sections below the hero that are still written in plain CSS. Importing only
-   `theme` + `utilities` keeps this change surgical.
+   sections below the hero that are still plain CSS. Importing only `theme` +
+   `utilities` keeps this change surgical.
+
+   Utilities are imported WITHOUT `layer(utilities)`, also on purpose. An
+   unlayered declaration always beats a layered one, whatever its specificity,
+   so layered utilities would silently lose to globals.css's element resets
+   (`a { color: inherit }`, `button { background: none }`, …) on every link and
+   button we style. Unlayered, the cascade falls out exactly right:
+
+       element resets (0-0-1)  <  utilities (0-1-0)  <  component CSS (0-1-0,
+                                                        imported later)
+
+   so utilities restyle links and buttons, and the plain-CSS sections that are
+   still in the app keep winning over any utility that happens to share a name.
 
    Everything below is `@theme inline`, so utilities compile to the tokens in
    tokens.css rather than to copies of their values. tokens.css stays the one
    source of truth: change a colour there and both the CSS files and the
    Tailwind utilities follow.
    ========================================================================== */
-
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme inline {
   /* Drop Tailwind's stock palette — only brand colours should be reachable. */
@@ -26,12 +38,16 @@
   --color-blush: var(--color-primary-light);
   --color-rose: var(--color-primary);
   --color-rose-deep: var(--color-primary-strong);
+  --color-rose-tint: var(--color-primary-tint);
   --color-sage: var(--color-secondary);
   --color-sage-deep: var(--color-secondary-strong);
+  --color-sage-tint: var(--color-secondary-tint);
   --color-mist: var(--color-secondary-light);
   --color-caramel: var(--color-accent);
   --color-ink: var(--color-text);
   --color-ink-soft: var(--color-text-muted);
+  --color-paper: var(--color-text-inverse);
+  --color-paper-soft: var(--color-text-inverse-muted);
   --color-line: var(--color-border);
   --color-line-strong: var(--color-border-strong);
   --color-transparent: transparent;
@@ -40,14 +56,23 @@
   --font-display: var(--font-heading);
   --font-sans: var(--font-body);
 
+  /* Two brand breakpoints on top of Tailwind's defaults. `nav` is where the
+     header can afford its three-zone composition (and where tokens.css grows
+     --header-height); `wide` is where the hero splits into its editorial
+     asymmetric grid. Named so both files state the same intent. */
+  --breakpoint-nav: 56.25rem; /* 900px */
+  --breakpoint-wide: 61.25rem; /* 980px */
+
   --ease-brand: var(--ease);
 
   --animate-drift-slow: gm-drift 11s var(--ease) infinite;
   --animate-drift-slower: gm-drift 14s var(--ease) infinite;
   --animate-hover-card: gm-hover-card 9s var(--ease) infinite;
-  --animate-thread: gm-thread 16s linear infinite;
+  --animate-thread: gm-thread 18s linear infinite;
   --animate-draw: gm-draw 1.6s var(--ease) 0.9s both;
   --animate-rise: gm-rise 0.9s var(--ease) both;
+  --animate-drawer: gm-drawer 260ms var(--ease);
+  --animate-fade: gm-fade 300ms var(--ease);
 }
 
 /* --- Keyframes ------------------------------------------------------------
@@ -78,10 +103,10 @@
 /* The announcement bar's one moving detail: a hairline travelling the width */
 @keyframes gm-thread {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(-110%);
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(310%);
   }
 }
 
@@ -103,4 +128,45 @@
     opacity: 1;
     transform: none;
   }
+}
+
+@keyframes gm-drawer {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes gm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* globals.css already collapses every animation to nothing under
+   prefers-reduced-motion, but it leaves `animation-delay` alone — which would
+   hold the hero's staggered lines invisible for up to half a second before
+   snapping them in. Clear the delays too, so reduced motion means "already
+   arrived" rather than "arrives late". */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+  }
+}
+
+/* --- Material -------------------------------------------------------------
+   One hand-made texture, kept here rather than inlined as an unreadable data
+   URI in JSX. It lifts the hero artwork off the flat ivory just enough to read
+   as a printed object. Purely decorative, never interactive. */
+
+.gm-paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
 }
