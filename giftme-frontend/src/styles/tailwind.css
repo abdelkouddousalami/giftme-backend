@@ -92,6 +92,12 @@
   --animate-drawer: gm-drawer 260ms var(--ease);
   --animate-fade: gm-fade 300ms var(--ease);
 
+  /* The mobile nav panel — Header.jsx keeps it mounted for the exit's
+     duration after close, so `-out` gets to actually play instead of being
+     cut off by `display: none`. */
+  --animate-menu-in: gm-menu-in 320ms var(--ease-out-soft) both;
+  --animate-menu-out: gm-menu-in 220ms var(--ease) reverse both;
+
   /* Hero only — see components/home/HeroAsides.jsx. The entry pair arrives
      from the side it lives on; the three drifts are the ambient motion, split
      across two elements so an entry (opacity + transform) and a loop
@@ -139,6 +145,17 @@
 @keyframes gm-fade {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes gm-menu-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 

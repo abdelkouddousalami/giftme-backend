@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- `viewport-fit=cover` lets content draw under the notch/home-indicator
+         on edge-to-edge phones; without it every env(safe-area-inset-*) below
+         resolves to 0 and the padding it drives is a silent no-op. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#FAF7F1" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#17140F" media="(prefers-color-scheme: dark)" />
     <title>GiftMe — Personalized gifts, made to mean more</title>

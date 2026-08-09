@@ -7,6 +7,8 @@
  * no component invents its own.
  */
 
+import i18n from '../i18n/index.js'
+
 const AMOUNT = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -82,6 +84,20 @@ export const ORDER_STATUS_LABELS = {
   CANCELLED: 'Cancelled',
 }
 
+/** Keyed the same as ORDER_STATUS_LABELS, read through i18next so callers
+ *  never see the English fallback while the catalogue above stays as
+ *  documentation of what each backend enum value means. */
+const ORDER_STATUS_KEYS = {
+  PENDING: 'orderStatus.pending',
+  CONFIRMED: 'orderStatus.confirmed',
+  PREPARING: 'orderStatus.preparing',
+  READY: 'orderStatus.ready',
+  SHIPPED: 'orderStatus.shipped',
+  OUT_FOR_DELIVERY: 'orderStatus.outForDelivery',
+  DELIVERED: 'orderStatus.delivered',
+  CANCELLED: 'orderStatus.cancelled',
+}
+
 /** The happy path, in order. CANCELLED is a side exit, not a stage. */
 export const ORDER_PIPELINE = [
   'PENDING',
@@ -94,5 +110,6 @@ export const ORDER_PIPELINE = [
 ]
 
 export function orderStatusLabel(status) {
-  return ORDER_STATUS_LABELS[status] ?? status
+  const key = ORDER_STATUS_KEYS[status]
+  return key ? i18n.t(key) : status
 }

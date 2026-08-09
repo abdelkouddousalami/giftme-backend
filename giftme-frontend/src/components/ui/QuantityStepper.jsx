@@ -48,7 +48,7 @@ function QuantityStepper({ value, onChange, min = 1, max = 99, disabled = false,
           const next = Number.parseInt(event.target.value, 10)
           if (!Number.isNaN(next)) onChange(clamp(next))
         }}
-        className="h-10 w-14 appearance-none border-y border-line-input bg-white text-center text-ink [font-size:var(--text-sm)] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+        className="h-10 w-14 appearance-none border-y border-line-input bg-white text-center text-ink [font-size:var(--text-base)] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
       />
 
       <button

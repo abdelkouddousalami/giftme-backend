@@ -10,11 +10,16 @@ import { useId } from 'react'
  *
  * Border colour is `--color-border-input` (3.3:1 on ivory), which is the WCAG
  * 1.4.11 non-text contrast minimum for a form control.
+ *
+ * Font size is the 16px `--text-base` step, not the 15px `--text-sm` used for
+ * body copy at this size elsewhere: iOS Safari auto-zooms the viewport on
+ * focus for any control under 16px, and there is no way to opt out of that
+ * short of clearing the threshold.
  */
 
 const CONTROL_CLASS = [
   'w-full appearance-none rounded-(--radius-sm) border border-line-input bg-white',
-  'px-3.5 py-2.5 text-ink [font-size:var(--text-sm)]',
+  'px-3.5 py-2.5 text-ink [font-size:var(--text-base)]',
   'transition-colors duration-200',
   'placeholder:text-ink-soft',
   'focus:border-burgundy focus:outline-none',

@@ -3,10 +3,7 @@ services:
     image: mysql:8.0
     container_name: giftme
     restart: unless-stopped
-    # MySQL 8's default auth plugin (caching_sha2_password) makes most JDBC clients,
-    # including DBeaver, fail with "Public Key Retrieval is not allowed" unless the
-    # connection explicitly opts in to retrieving it (or uses SSL). mysql_native_password
-    # avoids the whole class of issue for local dev.
+
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: "abdo@3214"

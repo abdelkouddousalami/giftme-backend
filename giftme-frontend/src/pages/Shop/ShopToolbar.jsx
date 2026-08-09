@@ -55,7 +55,7 @@ const SEARCH_INPUT_CLASS = [
   // No preflight: the input carries its UA border and appearance unless both
   // are stated here (Field.jsx's own controls do the same).
   'w-full appearance-none rounded-(--radius-sm) border border-line-input bg-white',
-  'py-2.5 pe-11 ps-10 text-ink [font-size:var(--text-sm)]',
+  'py-2.5 pe-11 ps-10 text-ink [font-size:var(--text-base)]',
   'transition-colors duration-200 placeholder:text-ink-soft',
   'focus:border-burgundy focus:outline-none',
   // We draw our own clear button; hide WebKit's duplicate.

@@ -26,7 +26,7 @@ function ProductCard({ product, priority = false }) {
 
   return (
     <article className="group h-full">
-      <Link to={paths.product(product.slug)} className="flex h-full flex-col">
+      <Link to={paths.product(product.slug)} className="tap-press flex h-full flex-col">
         {/* No preflight: <figure> keeps its UA margin unless reset. */}
         <figure className="relative m-0 overflow-hidden rounded-(--radius-md) bg-bone">
           <img

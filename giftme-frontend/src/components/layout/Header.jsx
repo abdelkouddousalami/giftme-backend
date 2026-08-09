@@ -27,6 +27,11 @@ const NAV_LABEL_KEYS = {
 const THEME_SEQUENCE = ['system', 'light', 'dark']
 const THEME_ICONS = { system: 'globe', light: 'sun', dark: 'moon' }
 
+/** Matches --animate-menu-out's duration in tailwind.css: the panel stays
+ * mounted this long after close so the exit animation gets to play instead
+ * of being cut off by `hidden`. */
+const MENU_EXIT_MS = 220
+
 /**
  * Quiet 40px target: no chrome at rest, a warm sand well on hover.
  *
@@ -55,7 +60,7 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
       <input
         id={id}
         ref={inputRef}
-        className="min-w-0 flex-1 appearance-none border-0 bg-transparent py-2 text-sm outline-none placeholder:text-ink-soft"
+        className="min-w-0 flex-1 appearance-none border-0 bg-transparent py-2 [font-size:var(--text-base)] outline-none placeholder:text-ink-soft"
         type="search"
         placeholder={t('header.searchPlaceholder')}
         value={value}
@@ -157,44 +162,92 @@ function LanguageSwitcher({ variant = 'desktop' }) {
   )
 }
 
-/** Cycles system -> light -> dark -> system on each press; the icon and the
- * accessible label always name the mode currently in effect. */
+/** A select: current mode as an icon, all three choices in a popover — same
+ * shape as <LanguageSwitcher />, so the header has one interaction pattern
+ * for "pick one of a few settings" instead of two. Mobile gets the language
+ * switcher's other shape instead of a popover: three pill buttons side by
+ * side, since a tap target beats a dropdown once there is room for both. */
 function ThemeToggle({ variant = 'desktop' }) {
   const { theme, setTheme } = useTheme()
   const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef(null)
 
-  function cycle() {
-    const next = THEME_SEQUENCE[(THEME_SEQUENCE.indexOf(theme) + 1) % THEME_SEQUENCE.length]
+  useEffect(() => {
+    if (!open) return undefined
+    const onClick = (event) => {
+      if (!rootRef.current?.contains(event.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [open])
+
+  function choose(next) {
     setTheme(next)
+    setOpen(false)
   }
-
-  const label = t('header.theme') + ': ' + t(`header.${theme}Mode`)
 
   if (variant === 'mobile') {
     return (
-      <button
-        type="button"
-        onClick={cycle}
-        className="inline-flex items-center gap-2 rounded-(--radius-pill) border border-line-strong px-3.5 py-1.5 text-xs font-medium text-ink-soft transition-colors duration-200 hover:border-ink hover:text-ink"
-      >
-        <Icon name={THEME_ICONS[theme]} size={15} strokeWidth={1.4} />
-        {t(`header.${theme}Mode`)}
-      </button>
+      <div className="flex items-center gap-2">
+        <span className="sr-only">{t('header.theme')}</span>
+        {THEME_SEQUENCE.map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => choose(mode)}
+            aria-pressed={mode === theme}
+            className={`inline-flex items-center gap-1.5 rounded-(--radius-pill) border px-3.5 py-1.5 text-xs font-medium transition-colors duration-200 ${
+              mode === theme
+                ? 'border-ink bg-ink text-paper'
+                : 'border-line-strong text-ink-soft hover:border-ink hover:text-ink'
+            }`}
+          >
+            <Icon name={THEME_ICONS[mode]} size={14} strokeWidth={1.4} />
+            {t(`header.${mode}Mode`)}
+          </button>
+        ))}
+      </div>
     )
   }
 
   return (
-    <span className="max-nav:hidden">
+    <div ref={rootRef} className="relative max-nav:hidden">
       <button
         type="button"
-        onClick={cycle}
-        title={label}
-        aria-label={label}
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-label={`${t('header.theme')}: ${t(`header.${theme}Mode`)}`}
         className={`inline-flex ${ICON_BUTTON}`}
       >
         <Icon name={THEME_ICONS[theme]} size={19} />
       </button>
-    </span>
+
+      {open ? (
+        <ul
+          role="menu"
+          className="absolute end-0 top-full z-(--z-overlay) mt-2 min-w-[9rem] rounded-(--radius-sm) border border-line-strong bg-white py-1.5 shadow-(--shadow-md)"
+        >
+          {THEME_SEQUENCE.map((mode) => (
+            <li key={mode} role="none">
+              <button
+                type="button"
+                role="menuitemradio"
+                aria-checked={mode === theme}
+                onClick={() => choose(mode)}
+                className={`flex w-full items-center gap-3 px-4 py-2 text-start text-sm transition-colors duration-200 hover:bg-bone ${
+                  mode === theme ? 'text-ink font-medium' : 'text-ink-soft'
+                }`}
+              >
+                <Icon name={THEME_ICONS[mode]} size={16} className="shrink-0" />
+                <span className="flex-1">{t(`header.${mode}Mode`)}</span>
+                {mode === theme ? <Icon name="check" size={14} className="shrink-0" /> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
   )
 }
 
@@ -216,6 +269,11 @@ function ThemeToggle({ variant = 'desktop' }) {
 function Header() {
   const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Lags `isMenuOpen` by MENU_EXIT_MS on close so the panel stays in the DOM
+  // long enough for the exit animation to actually play, instead of the
+  // `hidden` attribute cutting it off on the same frame the close is triggered.
+  const [isMenuMounted, setIsMenuMounted] = useState(false)
+  const menuExitTimer = useRef(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuTop, setMenuTop] = useState(null)
@@ -242,7 +300,6 @@ function Header() {
   const menuId = useId()
   const searchPanelId = useId()
   const desktopSearchInputId = useId()
-  const mobileSearchInputId = useId()
 
   /**
    * The menu is a fixed overlay, so it needs to start where the header ends —
@@ -272,8 +329,28 @@ function Header() {
     setIsSearchOpen(false)
   }, [location.pathname, location.hash])
 
+  // Mount tracks open with a delay on the way out, so `hidden` only lands
+  // once the exit animation below has had time to finish.
   useEffect(() => {
-    if (!isMenuOpen) return undefined
+    if (isMenuOpen) {
+      if (menuExitTimer.current) {
+        clearTimeout(menuExitTimer.current)
+        menuExitTimer.current = null
+      }
+      setIsMenuMounted(true)
+      return undefined
+    }
+
+    if (!isMenuMounted) return undefined
+
+    menuExitTimer.current = setTimeout(() => setIsMenuMounted(false), MENU_EXIT_MS)
+    return () => clearTimeout(menuExitTimer.current)
+  }, [isMenuOpen, isMenuMounted])
+
+  // Scroll stays locked through the exit animation too, so the page behind
+  // cannot jump while the panel is still visibly closing.
+  useEffect(() => {
+    if (!isMenuMounted) return undefined
 
     document.body.classList.add('is-scroll-locked')
     window.addEventListener('resize', measureMenuTop)
@@ -282,7 +359,7 @@ function Header() {
       document.body.classList.remove('is-scroll-locked')
       window.removeEventListener('resize', measureMenuTop)
     }
-  }, [isMenuOpen, measureMenuTop])
+  }, [isMenuMounted, measureMenuTop])
 
   // Escape closes whichever overlay is open and returns focus to its trigger.
   useEffect(() => {
@@ -395,7 +472,7 @@ function Header() {
           </div>
 
           <nav className="max-nav:hidden" aria-label="Main">
-            <ul className="flex items-center max-wide:gap-7 wide:gap-9">
+            <ul className="flex items-center max-wide:gap-5 wide:gap-9">
               {primaryNav.map((item) => (
                 <li key={item.id}>
                   <Link
@@ -432,6 +509,13 @@ function Header() {
 
             <LanguageSwitcher />
             <ThemeToggle />
+
+            <span className="max-nav:hidden">
+              <Link to={paths.track} className={`inline-flex ${ICON_BUTTON}`}>
+                <Icon name="truck" size={19} />
+                <span className="sr-only">{t('header.trackOrder')}</span>
+              </Link>
+            </span>
 
             <span className="max-nav:hidden">
               <Link to={accountTo} className={`inline-flex ${ICON_BUTTON}`}>
@@ -508,13 +592,18 @@ function Header() {
       <div
         id={menuId}
         ref={menuPanelRef}
-        className="animate-fade fixed inset-x-0 bottom-0 z-(--z-overlay) overflow-y-auto border-t border-line bg-ivory outline-none nav:hidden"
+        className={`fixed inset-x-0 bottom-0 z-(--z-overlay) overflow-y-auto border-t border-line bg-ivory outline-none nav:hidden ${
+          isMenuOpen ? 'animate-menu-in' : 'pointer-events-none animate-menu-out'
+        }`}
         style={{ top: menuTop ?? 'var(--header-height)' }}
-        hidden={!isMenuOpen}
+        hidden={!isMenuMounted}
         tabIndex={-1}
         aria-label="Menu"
       >
-        <Container className="flex flex-col gap-6 pt-6 pb-16">
+        <Container
+          className="flex flex-col gap-6 pt-6"
+          style={{ paddingBottom: 'max(4rem, calc(env(safe-area-inset-bottom) + 1.5rem))' }}
+        >
           <nav aria-label="Mobile">
             <ul className="flex flex-col border-t border-line">
               {primaryNav.map((item, index) => (
@@ -534,22 +623,28 @@ function Header() {
             </ul>
           </nav>
 
-          <SearchForm
-            id={mobileSearchInputId}
-            value={query}
-            onChange={handleQueryChange}
-            onSubmit={handleSearchSubmit}
-          />
-
-          <Button
-            to={paths.shop}
-            size="lg"
-            className="btn--block"
-            trailingIcon="arrowRight"
+          {/* A card, not a plain link: order tracking is the one thing a
+              shopper comes back for days after buying, so it gets weight the
+              same secondary text list below cannot give it. */}
+          <Link
+            to={paths.track}
             onClick={closeMenu}
+            className="tap-press flex items-center gap-4 rounded-(--radius-lg) border border-line-strong bg-white px-4 py-4 transition-colors duration-200 hover:border-ink"
           >
-            {t('header.createYourGift')}
-          </Button>
+            <span
+              aria-hidden="true"
+              className="flex size-11 shrink-0 items-center justify-center rounded-(--radius-pill) bg-clay-tint text-clay-deep"
+            >
+              <Icon name="truck" size={20} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-medium text-ink">{t('header.trackOrder')}</span>
+              <span className="mt-0.5 block text-ink-soft [font-size:var(--text-xs)]">
+                {t('header.trackOrderHint')}
+              </span>
+            </span>
+            <Icon name="chevronRight" size={18} className="shrink-0 text-ink-soft rtl:rotate-180" />
+          </Link>
 
           <div className="flex flex-wrap items-center gap-2.5 border-t border-line pt-6">
             <LanguageSwitcher variant="mobile" />
@@ -565,16 +660,6 @@ function Header() {
               >
                 <Icon name="user" size={17} strokeWidth={1.4} />
                 {isAuthenticated ? t('header.yourAccount') : t('header.signIn')}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={paths.track}
-                onClick={closeMenu}
-                className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-ink"
-              >
-                <Icon name="truck" size={17} strokeWidth={1.4} />
-                {t('header.trackOrder')}
               </Link>
             </li>
           </ul>

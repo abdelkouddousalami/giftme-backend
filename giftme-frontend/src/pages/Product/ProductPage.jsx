@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -63,6 +63,14 @@ function ProductPage() {
   const [customization, setCustomization] = useState(EMPTY_CUSTOMIZATION)
   const [added, setAdded] = useState(null)
 
+  // The page's own Add-to-cart button can be a long scroll below the fold
+  // once the personalization form is open — the sticky mobile bar stands in
+  // for it the instant it leaves the viewport, so the action never demands a
+  // scroll back up to reach. Desktop never sees it: `nav:` and up already
+  // keeps the gallery (and this button, right beside it) sticky in view.
+  const primaryCtaRef = useRef(null)
+  const [primaryCtaVisible, setPrimaryCtaVisible] = useState(true)
+
   // A different gift is a different personalization: never carry a draft — or a
   // stale "added to cart" note — across a slug change.
   useEffect(() => {
@@ -78,6 +86,19 @@ function ProductPage() {
   useEffect(() => {
     if (stock > 0) setQuantity((current) => Math.min(current, stock))
   }, [stock])
+
+  useEffect(() => {
+    const node = primaryCtaRef.current
+    if (!node || typeof IntersectionObserver === 'undefined') return undefined
+
+    const observer = new IntersectionObserver(([entry]) => setPrimaryCtaVisible(entry.isIntersecting), {
+      // Ignores the sticky header's own height so the swap happens the
+      // instant the button is actually covered, not merely close to it.
+      rootMargin: '-64px 0px 0px 0px',
+    })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [product])
 
   const paragraphs = useMemo(() => splitParagraphs(product?.description), [product?.description])
 
@@ -240,7 +261,7 @@ function ProductPage() {
               </section>
             ) : null}
 
-            <div className="mt-9 border-t border-line pt-9">
+            <div ref={primaryCtaRef} className="mt-9 border-t border-line pt-9">
               <div className="flex flex-wrap items-center gap-4">
                 <QuantityStepper
                   value={quantity}
@@ -375,6 +396,43 @@ function ProductPage() {
           </div>
         </div>
       </Container>
+
+      {/* Mirrors the primary button above — same action, same label, same
+          disabled rule — so this is a second entry point, never a second
+          decision. Desktop is never shown this: `nav:hidden` matches the
+          breakpoint where the gallery column (and the real button beside it)
+          is already sticky in view. */}
+      <div
+        aria-hidden={primaryCtaVisible}
+        className={`fixed inset-x-0 bottom-0 z-(--z-header) border-t border-line-strong bg-white/95 backdrop-blur transition-transform duration-300 ease-brand nav:hidden ${
+          primaryCtaVisible ? 'pointer-events-none translate-y-full' : 'translate-y-0'
+        }`}
+        style={{
+          paddingBottom: 'max(0.875rem, calc(env(safe-area-inset-bottom) + 0.5rem))',
+        }}
+      >
+        <div className="flex items-center gap-4 px-5 pt-3.5">
+          <p className="min-w-0 flex-1">
+            <span className="block truncate [font-size:var(--text-xs)] text-ink-soft">
+              {product.name}
+            </span>
+            <span className="block font-medium [font-size:var(--text-lg)]">
+              {canOrder ? formatPrice(lineSubtotal) : formatPrice(product.price)}
+            </span>
+          </p>
+
+          <Button
+            variant="primary"
+            size="md"
+            onClick={handleAdd}
+            disabled={!canOrder}
+            tabIndex={primaryCtaVisible ? -1 : undefined}
+            className="shrink-0"
+          >
+            {withdrawn ? t('product.unavailable') : soldOut ? t('product.soldOut') : t('product.addToCart')}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
