@@ -35,8 +35,8 @@ function NotFoundPage() {
             Back to home
           </Button>
           <Button
-            to={homeAnchor(sectionIds.featuredGifts)}
-            variant="secondary"
+            to={homeAnchor(sectionIds.gifts)}
+            variant="quiet"
             size="lg"
           >
             See the gifts

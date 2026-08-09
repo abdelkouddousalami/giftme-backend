@@ -1,11 +1,16 @@
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
-import Icon from '../common/Icon.jsx'
 import { steps } from '../../data/home.js'
 import { sectionIds } from '../../app/paths.js'
 import './HowItWorks.css'
 
+/**
+ * Three steps, set as a printed run-on rather than three cards: one hairline
+ * across the top of the row, a large clay numeral under it, and nothing else.
+ * The section that follows it is a photograph, so this one is deliberately the
+ * quietest thing on the page.
+ */
 function HowItWorks() {
   return (
     <section
@@ -24,7 +29,7 @@ function HowItWorks() {
                 From a moment to a <em>memory.</em>
               </>
             }
-            description="Four steps, about ten minutes, and the rest is ours to make."
+            description="Three steps, about ten minutes, and the rest is ours to make."
           />
         </Reveal>
 
@@ -33,13 +38,12 @@ function HowItWorks() {
             <Reveal
               as="li"
               key={step.id}
-              delay={index * 80}
+              delay={index * 90}
               className="how__step"
             >
-              <div className="how__step-head">
-                <span className="how__step-number">{step.number}</span>
-                <Icon name={step.icon} size={26} strokeWidth={1.25} />
-              </div>
+              <span className="how__step-number" aria-hidden="true">
+                {step.number}
+              </span>
 
               <h3 className="how__step-title">{step.title}</h3>
               <p className="how__step-text">{step.description}</p>

@@ -1,17 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Memory gallery thumbnail placeholder. Warm-neutral palette; swap for a
+       square crop of a real photo. -->
   <defs>
     <linearGradient id="m3" x1="0" y1="0" x2="0.3" y2="1">
-      <stop offset="0" stop-color="#EDA9B5" />
-      <stop offset="1" stop-color="#FBE8DA" />
+      <stop offset="0" stop-color="#CDB08A" />
+      <stop offset="1" stop-color="#F2EADC" />
     </linearGradient>
   </defs>
   <rect width="400" height="400" fill="url(#m3)" />
-  <g fill="#F3D0A4" opacity="0.6">
+  <g fill="#E6D2AE" opacity="0.6">
     <circle cx="86" cy="86" r="34" />
     <circle cx="330" cy="130" r="46" />
     <circle cx="196" cy="58" r="18" />
   </g>
-  <g fill="#8C4F5C">
+  <g fill="#4E4A3E">
     <circle cx="152" cy="238" r="46" />
     <path d="M152 296c46 0 72 30 80 80l8 52H64l8-52c8-50 34-80 80-80z" />
     <circle cx="266" cy="264" r="38" />

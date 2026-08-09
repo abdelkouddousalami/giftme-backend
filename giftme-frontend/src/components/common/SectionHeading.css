@@ -1,8 +1,8 @@
 .section-heading {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  max-width: 640px;
+  gap: var(--space-5);
+  max-width: 42rem;
 }
 
 .section-heading--center {
@@ -13,6 +13,11 @@
 
 .section-heading__title {
   font-size: var(--text-display-2);
+  max-width: 20ch;
+}
+
+.section-heading--center .section-heading__title {
+  max-width: 22ch;
 }
 
 .section-heading__title em {
@@ -21,7 +26,23 @@
 }
 
 .section-heading__description {
-  color: var(--color-text-muted);
-  font-size: var(--text-lg);
   max-width: 52ch;
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+/* --- On the ink bands ---------------------------------------------------- */
+
+.section-heading--inverse .section-heading__title {
+  color: var(--color-text-inverse);
+}
+
+/* Burgundy vanishes against near-black; clay is the accent that survives it. */
+.section-heading--inverse .section-heading__title em {
+  color: var(--color-accent);
+}
+
+.section-heading--inverse .section-heading__description {
+  color: var(--color-text-inverse-muted);
 }

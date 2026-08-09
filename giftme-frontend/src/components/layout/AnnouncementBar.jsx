@@ -3,42 +3,52 @@ import Container from '../common/Container.jsx'
 import { homeAnchor, sectionIds } from '../../app/paths.js'
 
 /**
- * The quiet line above the header.
+ * The line above the header.
  *
- * Deliberately not a promo strip: no discount, no urgency, no exclamation
- * mark. It states what GiftMe is for, in the same uppercase micro-type the
- * section eyebrows use, so it reads as part of the masthead rather than as
- * advertising. It scrolls away with the page — only the header is sticky.
+ * It states three facts a gift shopper is actually weighing — what this shop
+ * makes, what makes it different, and when it arrives — rather than a discount
+ * or a countdown. Ink ground, paper type, one clay mark between each: it reads
+ * as the top edge of the masthead, which is why the header below it is ivory
+ * and unlined until you scroll.
  *
- * One moving detail: a hairline crossing the rule at the foot of the bar, once
- * every eighteen seconds. globals.css stops it under prefers-reduced-motion.
+ * It scrolls away with the page; only the header is sticky.
+ *
+ * On phones the third fact steps out rather than wrapping the line into an
+ * untidy block — delivery is repeated in full in the trust bar a screen below,
+ * so nothing is lost.
  */
+
+function Mark({ className = '' }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`block h-[3px] w-[3px] shrink-0 rotate-45 bg-clay ${className}`}
+    />
+  )
+}
+
 function AnnouncementBar() {
   return (
     <aside
       aria-label="GiftMe announcement"
-      className="relative isolate overflow-hidden border-b border-sage-tint bg-mist text-ink"
+      className="bg-ink text-paper"
     >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 block h-px overflow-hidden"
-      >
-        <span className="block h-full w-[28%] animate-thread opacity-60 [background-image:linear-gradient(90deg,transparent,var(--color-secondary),transparent)]" />
-      </span>
+      <Container className="flex min-h-[2.5rem] items-center justify-center py-2">
+        <p className="flex items-center justify-center gap-x-3 text-center text-[0.625rem] leading-[1.6] tracking-[0.18em] uppercase sm:gap-x-4 sm:text-[0.6875rem] sm:tracking-[0.2em]">
+          <span>Personalized gifts</span>
 
-      <Container className="flex min-h-[2.375rem] items-center justify-center py-2">
-        <p className="text-center text-[0.6875rem] leading-[1.5] tracking-[0.16em] uppercase sm:text-[0.72rem] sm:tracking-[0.18em]">
-          {'Every gift tells a story'}
-          <span
-            aria-hidden="true"
-            className="mx-3 hidden h-1 w-1 translate-y-[-0.15em] rounded-full bg-caramel align-middle sm:inline-block"
-          />
+          <Mark />
+
           <Link
             to={homeAnchor(sectionIds.qrMemory)}
-            className="hidden decoration-caramel decoration-1 underline-offset-[0.4em] transition-colors duration-200 hover:text-rose hover:underline sm:inline"
+            className="underline-offset-[0.45em] transition-opacity duration-200 hover:underline hover:opacity-80"
           >
-            Add a private QR memory to yours
+            Private QR memories
           </Link>
+
+          <Mark className="max-sm:hidden" />
+
+          <span className="max-sm:hidden">Delivered in 3–5 days</span>
         </p>
       </Container>
     </aside>

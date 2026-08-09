@@ -55,9 +55,10 @@ function FAQSection() {
                   >
                     <span>{item.question}</span>
                     <Icon
-                      name="chevronDown"
-                      size={20}
-                      className="faq__chevron"
+                      name={isOpen ? 'minus' : 'plus'}
+                      size={18}
+                      strokeWidth={1.4}
+                      className="faq__mark"
                     />
                   </button>
                 </h3>

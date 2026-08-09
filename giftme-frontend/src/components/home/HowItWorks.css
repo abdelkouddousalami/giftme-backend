@@ -1,6 +1,5 @@
 .how {
   padding-block: var(--section-y);
-  background-color: var(--color-surface);
 }
 
 .how__steps {
@@ -12,45 +11,49 @@
 .how__step {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
+  align-items: flex-start;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-strong);
 }
 
-.how__step-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-2);
-  color: var(--color-secondary);
-}
-
+/* The one large numeral per column. Set in the display face at a size no other
+   number on the page reaches, so the three of them carry the whole section
+   without a single icon or panel. */
 .how__step-number {
   font-family: var(--font-heading);
-  font-size: var(--text-lg);
-  letter-spacing: 0.08em;
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: var(--weight-light);
+  line-height: 1;
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums;
   color: var(--color-accent);
 }
 
 .how__step-title {
-  font-size: 1.375rem;
+  margin-top: var(--space-5);
+  font-size: var(--text-display-3);
+}
+
+/* See StepTitle in HowItWorks.jsx — the display face's ornamental ampersand
+   does not survive being set this small. */
+.how__amp {
+  font-family: var(--font-body);
+  font-weight: var(--weight-light);
+  font-size: 0.86em;
 }
 
 .how__step-text {
+  margin-top: var(--space-3);
+  max-width: 34ch;
   font-size: var(--text-sm);
+  line-height: 1.7;
   color: var(--color-text-muted);
 }
 
-@media (min-width: 620px) {
+@media (min-width: 52rem) {
   .how__steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6) var(--space-7);
-  }
-}
-
-@media (min-width: 1000px) {
-  .how__steps {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-7);
+    margin-top: var(--space-9);
   }
 }

@@ -6,19 +6,29 @@ import Icon from '../common/Icon.jsx'
 import BrandLogo from '../common/BrandLogo.jsx'
 import { primaryNav } from '../../data/navigation.js'
 import { paths } from '../../app/paths.js'
+import { useCart } from '../../store/CartContext.jsx'
+import { useAuth } from '../../auth/AuthContext.jsx'
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
-/** Quiet 40px target: no chrome at rest, a soft rose disc on hover. */
+/**
+ * Quiet 40px target: no chrome at rest, a warm sand well on hover.
+ *
+ * It deliberately does NOT set `display`. Two Tailwind entry points share this
+ * bundle, which puts brand-breakpoint utilities (`nav:`, `wide:`) EARLIER in
+ * the stylesheet than unvariated ones — so a bare `inline-flex` here would beat
+ * the menu button's `nav:hidden` and leave a hamburger on the desktop header.
+ * Every call site states its own display, in ranges that cannot overlap.
+ */
 const ICON_BUTTON =
-  'inline-flex h-10 w-10 items-center justify-center rounded-(--radius-pill) text-ink transition-colors duration-200 hover:bg-rose-tint hover:text-rose'
+  'h-10 w-10 items-center justify-center rounded-(--radius-sm) text-ink transition-colors duration-200 hover:bg-sand'
 
 /** Shared by the desktop drawer and the mobile menu — declared once. */
 function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
   return (
     <form
-      className="m-0 flex items-center gap-3 rounded-(--radius-pill) border border-line bg-ivory py-2 pr-2 pl-4 transition-colors duration-200 focus-within:border-rose"
+      className="m-0 flex items-center gap-3 rounded-(--radius-sm) border border-line-input bg-white py-1.5 pr-1.5 pl-4 transition-colors duration-200 focus-within:border-ink"
       role="search"
       onSubmit={onSubmit}
     >
@@ -38,7 +48,7 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
       />
       <button
         type="submit"
-        className="shrink-0 rounded-(--radius-pill) bg-rose px-[1.15rem] py-[0.55rem] text-sm font-medium text-white transition-colors duration-200 hover:bg-rose-deep"
+        className="shrink-0 rounded-(--radius-xs) bg-ink px-4 py-2 text-xs font-medium tracking-[0.06em] text-paper uppercase transition-colors duration-200 hover:bg-graphite"
       >
         Search
       </button>
@@ -46,6 +56,21 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
   )
 }
 
+/**
+ * The storefront masthead.
+ *
+ * Three zones from `nav` up (992px): the mark, four navigation items, and the
+ * shopper's own controls — search, account, bag. That breakpoint is measured
+ * rather than inherited: four labels plus three targets plus a call to action
+ * do not fit in the old 900px composition without crowding, and crowding is
+ * the one thing a premium masthead cannot do. For the same reason the CTA
+ * itself only appears at `wide` (1200px), where there is room for it to sit
+ * apart rather than jostle the bag.
+ *
+ * At rest the header is a translucent veil over the hero with no bottom edge,
+ * so the announcement bar, the header and the hero read as one field. It grows
+ * a hairline and a more opaque ground the moment the page leaves the top.
+ */
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -55,6 +80,15 @@ function Header() {
 
   const location = useLocation()
   const navigate = useNavigate()
+
+  const { itemCount } = useCart()
+  const { isAuthenticated } = useAuth()
+
+  /** Signed-out shoppers get the sign-in screen; the account page is behind auth. */
+  const accountTo = isAuthenticated ? paths.account : paths.login
+
+  const cartLabel =
+    itemCount > 0 ? `Cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}` : 'Cart, empty'
 
   const headerRef = useRef(null)
   const menuButtonRef = useRef(null)
@@ -183,8 +217,11 @@ function Header() {
 
     const trimmed = query.trim()
 
+    // `search`, not `q`: the shop page mirrors its URL state onto the backend's
+    // own query parameter names (GET /api/products?search=…), so a shared or
+    // hand-edited URL and a header search produce the same request.
     navigate(
-      trimmed ? `${paths.shop}?q=${encodeURIComponent(trimmed)}` : paths.shop,
+      trimmed ? `${paths.shop}?search=${encodeURIComponent(trimmed)}` : paths.shop,
     )
   }
 
@@ -203,23 +240,23 @@ function Header() {
     <>
       <header
         ref={headerRef}
-        className={`sticky top-0 z-(--z-header) border-b backdrop-blur-[14px] backdrop-saturate-150 transition-[background-color,border-color] duration-300 ${
+        className={`sticky top-0 z-(--z-header) border-b backdrop-blur-[16px] backdrop-saturate-150 transition-[background-color,border-color] duration-300 ${
           isScrolled
             ? 'border-line bg-(--color-bg-veil-strong)'
             : 'border-transparent bg-(--color-bg-veil)'
         }`}
       >
-        <Container className="flex min-h-(--header-height) items-center justify-between gap-5 nav:grid nav:grid-cols-[1fr_auto_1fr]">
+        <Container className="min-h-(--header-height) items-center justify-between max-nav:flex max-nav:gap-5 nav:grid nav:grid-cols-[1fr_auto_1fr] nav:gap-8">
           <div className="flex items-center">
             <BrandLogo />
           </div>
 
-          <nav className="hidden nav:block" aria-label="Main">
-            <ul className="flex items-center gap-8">
+          <nav className="max-nav:hidden" aria-label="Main">
+            <ul className="flex items-center max-wide:gap-7 wide:gap-9">
               {primaryNav.map((item) => (
                 <li key={item.id}>
                   <Link
-                    className="group relative inline-block py-2 text-[0.95rem] text-ink-soft transition-colors duration-200 hover:text-rose"
+                    className="group relative inline-block py-2 text-[0.875rem] text-ink transition-colors duration-200 hover:text-burgundy"
                     to={item.to}
                   >
                     {item.label}
@@ -233,34 +270,54 @@ function Header() {
             </ul>
           </nav>
 
-          <div className="flex items-center justify-end gap-1">
-            <span className="hidden nav:block">
+          <div className="flex items-center justify-end gap-0.5">
+            <span className="max-nav:hidden">
               <button
                 type="button"
                 ref={searchButtonRef}
-                className={ICON_BUTTON}
+                className={`inline-flex ${ICON_BUTTON}`}
                 aria-expanded={isSearchOpen}
                 aria-controls={searchPanelId}
                 onClick={() => setIsSearchOpen((open) => !open)}
               >
-                <Icon name={isSearchOpen ? 'close' : 'search'} size={20} />
+                <Icon name={isSearchOpen ? 'close' : 'search'} size={19} />
                 <span className="sr-only">
                   {isSearchOpen ? 'Close search' : 'Search gifts'}
                 </span>
               </button>
             </span>
 
-            <Link to={paths.cart} className={ICON_BUTTON}>
-              <Icon name="bag" size={20} />
-              <span className="sr-only">Cart</span>
+            <span className="max-nav:hidden">
+              <Link to={accountTo} className={`inline-flex ${ICON_BUTTON}`}>
+                <Icon name="user" size={19} />
+                <span className="sr-only">
+                  {isAuthenticated ? 'Your account' : 'Sign in'}
+                </span>
+              </Link>
+            </span>
+
+            <Link to={paths.cart} className={`relative inline-flex ${ICON_BUTTON}`}>
+              <Icon name="bag" size={19} />
+              {/* The count is announced through the link's own label rather than
+                  as loose text, so a screen reader hears "Cart, 2 items" in one
+                  go instead of a stray numeral. */}
+              {itemCount > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-(--radius-pill) bg-burgundy px-1 text-[0.5625rem] leading-4 font-semibold text-paper"
+                >
+                  {itemCount > 9 ? '9+' : itemCount}
+                </span>
+              ) : null}
+              <span className="sr-only">{cartLabel}</span>
             </Link>
 
             <span
               aria-hidden="true"
-              className="mx-2 hidden h-5 w-px bg-line nav:block"
+              className="mx-3 h-5 w-px bg-line-strong max-wide:hidden wide:block"
             />
 
-            <div className="hidden nav:block">
+            <div className="max-wide:hidden">
               <Button to={paths.shop} variant="outline" size="sm">
                 Create Your Gift
               </Button>
@@ -269,7 +326,7 @@ function Header() {
             <button
               type="button"
               ref={menuButtonRef}
-              className={`${ICON_BUTTON} nav:hidden`}
+              className={`${ICON_BUTTON} max-nav:inline-flex nav:hidden`}
               aria-expanded={isMenuOpen}
               aria-controls={menuId}
               onClick={toggleMenu}
@@ -284,7 +341,7 @@ function Header() {
 
         <div
           id={searchPanelId}
-          className="animate-drawer border-t border-line bg-white py-4"
+          className="animate-drawer border-t border-line bg-ivory py-4"
           hidden={!isSearchOpen}
         >
           <Container>
@@ -301,7 +358,7 @@ function Header() {
 
       {/* Outside <header> on purpose: the header's backdrop-filter makes it a
           containing block for fixed positioning, which would pin this overlay
-          to the header's own 64px box instead of the viewport. */}
+          to the header's own box instead of the viewport. */}
       <div
         id={menuId}
         ref={menuPanelRef}
@@ -311,17 +368,17 @@ function Header() {
         tabIndex={-1}
         aria-label="Menu"
       >
-        <Container className="flex flex-col gap-6 pt-6 pb-16">
+        <Container className="flex flex-col gap-7 pt-7 pb-16">
           <nav aria-label="Mobile">
-            <ul className="flex flex-col">
+            <ul className="flex flex-col border-t border-line">
               {primaryNav.map((item, index) => (
                 <li key={item.id}>
                   <Link
-                    className="flex items-baseline gap-4 border-b border-line py-4 font-display text-[1.6rem] transition-colors duration-200 hover:text-rose"
+                    className="flex items-baseline gap-4 border-b border-line py-4 font-display text-[1.55rem] transition-colors duration-200 hover:text-burgundy"
                     to={item.to}
                     onClick={closeMenu}
                   >
-                    <span className="font-sans text-[0.68rem] tracking-[0.2em] text-caramel">
+                    <span className="font-sans text-[0.625rem] tracking-[0.2em] text-clay-deep">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     {item.label}
@@ -348,9 +405,28 @@ function Header() {
             Create Your Gift
           </Button>
 
-          <p className="font-display text-(length:--text-lg) italic text-ink-soft">
-            More than a gift, a memory.
-          </p>
+          <ul className="flex flex-col gap-4 border-t border-line pt-6 text-[0.875rem] text-ink-soft">
+            <li>
+              <Link
+                to={accountTo}
+                onClick={closeMenu}
+                className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-ink"
+              >
+                <Icon name="user" size={17} strokeWidth={1.4} />
+                {isAuthenticated ? 'Your account' : 'Sign in'}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to={paths.track}
+                onClick={closeMenu}
+                className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-ink"
+              >
+                <Icon name="truck" size={17} strokeWidth={1.4} />
+                Track your order
+              </Link>
+            </li>
+          </ul>
         </Container>
       </div>
     </>

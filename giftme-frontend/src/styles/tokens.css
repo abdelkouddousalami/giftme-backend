@@ -5,71 +5,102 @@
    ========================================================================== */
 
 :root {
-  /* --- Brand palette (raw) ------------------------------------------------ */
-  --ivory-blush: #fff7f3;
-  --blush-pink: #fad6dc;
-  --dusty-rose: #b44b5e;
-  --sage-green: #648a73;
-  --sage-mist: #e8efe6;
-  --caramel: #d4a373;
-  --charcoal: #2c2c2c;
+  /* --- Brand palette ------------------------------------------------------
+     A warm neutral identity: paper, ink, and three earth accents. The only
+     place a hex literal belongs — everything below is expressed in terms of
+     these.
+
+     Intended distribution across the page:
+       ~60% ivory / white   ~15% bone / sand   ~12% ink (two dark anchors:
+       the QR memory band and the footer)   ~8% olive   ~5% burgundy + clay
+
+     Burgundy is the brand's one loud colour: a primary CTA, an italic in a
+     headline, a selected mark. Clay (terracotta) is a detail — a rule, a
+     numeral, a small mark — never a surface. Blush is a whisper of the old
+     palette, kept for a single soft fill and nothing else; it must never
+     become a section-wide wash again. */
+  --color-ivory: #faf7f1; /* warm ivory — the page itself */
+  --color-bone: #f2ece2; /* off-white — the alternating band */
+  --color-sand: #e6dccb; /* warm beige — panels and fills */
+  --color-white: #ffffff;
+  --color-charcoal: #1e1c1a; /* deep, warm near-black */
+  --color-graphite: #34302b; /* one step up from ink, for dark surfaces */
+  --color-burgundy: #7b3b3f; /* muted burgundy — the brand's one loud colour */
+  --color-clay: #b4674a; /* terracotta — a detail colour, never a surface */
+  --color-olive: #6b7355; /* subtle sage-olive — the grounded secondary */
+  --color-blush: #e8d3ce; /* dusty pink, dialled all the way back */
 
   /* --- Semantic colors ---------------------------------------------------- */
-  --color-bg: var(--ivory-blush);
-  --color-surface: #ffffff;
-  --color-surface-muted: #fdf3ee;
+  --color-bg: var(--color-ivory);
+  --color-surface: var(--color-white);
+  --color-surface-muted: var(--color-bone);
+  --color-surface-sand: var(--color-sand);
+  --color-surface-dark: var(--color-charcoal);
+  --color-surface-dark-soft: var(--color-graphite);
+
   /* Sticky header fills — kept here so the header never hardcodes a colour */
-  --color-bg-veil: rgba(255, 247, 243, 0.86);
-  --color-bg-veil-strong: rgba(255, 247, 243, 0.95);
+  --color-bg-veil: rgba(250, 247, 241, 0.8);
+  --color-bg-veil-strong: rgba(250, 247, 241, 0.94);
 
-  --color-primary: var(--dusty-rose);
-  --color-primary-strong: #93394a; /* hover / pressed */
-  --color-primary-light: var(--blush-pink);
-  --color-primary-tint: rgba(180, 75, 94, 0.08);
+  --color-primary: var(--color-burgundy);
+  --color-primary-strong: #62292d; /* hover / pressed */
+  --color-primary-light: var(--color-blush);
+  --color-primary-tint: rgba(123, 59, 63, 0.07);
 
-  --color-secondary: var(--sage-green);
-  --color-secondary-strong: #4f7160; /* AA-compliant sage for text */
-  --color-secondary-light: var(--sage-mist);
-  --color-secondary-tint: rgba(100, 138, 115, 0.1);
+  --color-secondary: var(--color-olive);
+  --color-secondary-strong: #565d42; /* 6.4:1 on ivory — safe for text */
+  --color-secondary-light: #e9eade; /* olive mist */
+  --color-secondary-tint: rgba(107, 115, 85, 0.1);
 
-  --color-accent: var(--caramel);
-  --color-accent-tint: rgba(212, 163, 115, 0.16);
+  --color-accent: var(--color-clay);
+  --color-accent-strong: #97533a; /* 5.4:1 on ivory — clay that can hold text */
+  --color-accent-tint: rgba(180, 103, 74, 0.13);
 
-  --color-text: var(--charcoal);
-  --color-text-muted: #6b6360; /* 5.5:1 on ivory */
-  --color-text-inverse: #fdf6f2;
-  --color-text-inverse-muted: rgba(253, 246, 242, 0.68);
+  --color-text: var(--color-charcoal);
+  --color-text-muted: #6b645c; /* 5.5:1 on ivory */
+  --color-text-inverse: #f6f1e8;
+  --color-text-inverse-muted: rgba(246, 241, 232, 0.66);
 
-  --color-border: #ecdfd8;
-  --color-border-strong: #ddc9c0;
-  --color-white: #ffffff;
+  --color-border: #e6ded1; /* hairlines and decorative rules */
+  --color-border-strong: #d5c9b6; /* card edges, dividers that carry weight */
+  --color-border-input: #8f877c; /* 3.3:1 — form controls, per WCAG 1.4.11 */
+  --color-border-inverse: rgba(246, 241, 232, 0.16);
+  --color-border-inverse-strong: rgba(246, 241, 232, 0.3);
 
-  --color-focus: var(--dusty-rose);
+  --color-focus: var(--color-primary);
 
-  /* --- Typography --------------------------------------------------------- */
-  --font-heading: 'Playfair Display', 'Iowan Old Style', 'Palatino Linotype',
-    Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
-  --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+  /* --- Typography ---------------------------------------------------------
+     Fraunces for display (an editorial old-style serif — warm and considered,
+     where the previous Playfair read romantic), Inter for everything else. The
+     fallbacks are chosen for matching proportions, so a failed webfont request
+     changes the texture of the page but never its composition. */
+  --font-heading: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Palatino,
+    'Book Antiqua', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   /* Fluid display sizes — scale with the viewport, never overflow it */
-  --text-display-1: clamp(2.25rem, 6.2vw, 4.5rem);
-  --text-display-2: clamp(2rem, 4.4vw, 3.25rem);
-  --text-display-3: clamp(1.5rem, 2.6vw, 2.125rem);
-  --text-xl: clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-display-1: clamp(2.6rem, 6.6vw, 5rem);
+  --text-display-2: clamp(1.95rem, 4vw, 3.1rem);
+  --text-display-3: clamp(1.4rem, 2.1vw, 1.85rem);
+  --text-xl: clamp(1.0625rem, 1.15vw, 1.25rem);
   --text-lg: 1.0625rem;
   --text-base: 1rem;
   --text-sm: 0.9375rem;
   --text-xs: 0.8125rem;
-  --text-eyebrow: 0.75rem;
+  --text-micro: 0.75rem;
+  --text-eyebrow: 0.6875rem;
 
-  --leading-display: 1.06;
-  --leading-heading: 1.18;
-  --leading-body: 1.68;
+  --leading-display: 1.02;
+  --leading-heading: 1.14;
+  --leading-body: 1.65;
 
-  --tracking-display: -0.02em;
-  --tracking-eyebrow: 0.18em;
+  --tracking-display: -0.025em;
+  --tracking-tight: -0.012em;
+  --tracking-eyebrow: 0.22em;
+  --tracking-label: 0.14em;
 
+  --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
@@ -88,40 +119,51 @@
 
   /* Vertical rhythm. Each section contributes `--section-y` top and bottom,
      so the gap between two adjacent sections is twice this value. */
-  --section-y: clamp(2.75rem, 5.2vw, 4.75rem);
-  --section-y-lg: clamp(4rem, 7vw, 6.5rem);
+  --section-y: clamp(3.25rem, 6vw, 5.5rem);
+  --section-y-lg: clamp(4.5rem, 8vw, 7.5rem);
 
   /* --- Layout ------------------------------------------------------------- */
-  --container-width: 1200px;
-  --container-narrow: 780px;
-  --container-gutter: clamp(1.25rem, 5vw, 2.5rem);
-  --header-height: 64px;
+  --container-width: 1240px;
+  --container-narrow: 760px;
+  --container-gutter: clamp(1.25rem, 4.5vw, 3rem);
+  --header-height: 62px;
 
-  /* --- Radius ------------------------------------------------------------- */
-  --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 18px;
-  --radius-xl: 28px;
+  /* --- Radius --------------------------------------------------------------
+     Deliberately tight. Nothing on this page is a lozenge: buttons and inputs
+     get 3px, media 6px, panels 12–18px. `pill` survives for two jobs only —
+     round chips and round icon wells. */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
   --radius-pill: 999px;
 
-  /* --- Elevation (warm-tinted, deliberately soft) ------------------------- */
-  --shadow-xs: 0 1px 2px rgba(88, 52, 44, 0.06);
-  --shadow-sm: 0 2px 6px rgba(88, 52, 44, 0.06);
-  --shadow-md: 0 14px 34px -18px rgba(88, 52, 44, 0.32);
-  --shadow-lg: 0 34px 70px -34px rgba(88, 52, 44, 0.4);
+  /* --- Elevation (ink-tinted, deliberately restrained) -------------------- */
+  --shadow-xs: 0 1px 2px rgba(30, 28, 26, 0.05);
+  --shadow-sm: 0 2px 10px -4px rgba(30, 28, 26, 0.1);
+  --shadow-md: 0 20px 44px -28px rgba(30, 28, 26, 0.32);
+  --shadow-lg: 0 44px 90px -48px rgba(30, 28, 26, 0.42);
+
+  /* --- Texture ------------------------------------------------------------
+     A single tile of grayscale fractal noise, inlined so it costs no request.
+     Used at very low opacity behind the hero and the two dark bands to stop
+     large flat fields reading as flat digital colour. */
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
 
   /* --- Motion ------------------------------------------------------------- */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --transition-fast: 160ms var(--ease);
-  --transition-base: 260ms var(--ease);
-  --transition-slow: 700ms var(--ease);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 180ms var(--ease);
+  --transition-base: 300ms var(--ease);
+  --transition-slow: 800ms var(--ease-out-soft);
 
   /* --- Z-index ------------------------------------------------------------ */
   --z-header: 100;
   --z-overlay: 200;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 62rem) {
   :root {
     --header-height: 76px;
   }

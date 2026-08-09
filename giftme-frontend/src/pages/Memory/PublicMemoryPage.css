@@ -75,7 +75,7 @@
   max-height: 60vh;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  background-color: var(--charcoal);
+  background-color: var(--color-charcoal);
 }
 
 .memory-page__audio {

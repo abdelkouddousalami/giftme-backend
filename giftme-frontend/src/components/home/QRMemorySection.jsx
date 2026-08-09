@@ -7,6 +7,18 @@ import { memoryLayers, scanFlow } from '../../data/home.js'
 import { paths, sectionIds } from '../../app/paths.js'
 import './QRMemorySection.css'
 
+/**
+ * The one thing GiftMe sells that a print shop cannot.
+ *
+ * It is the page's first ink band, and that is the argument: after four ivory
+ * screens the lights go down for the section that matters most, and the phone
+ * preview becomes the brightest object on the page. Warm clay light behind it,
+ * grain over the whole field, and the same hairline-and-numeral language as
+ * every other section — dark, but not a different template.
+ *
+ * The copy stays emotional rather than technical. Nobody buys a QR code.
+ */
+
 /** Fixed waveform so the preview renders identically on every load. */
 const WAVEFORM = [32, 64, 44, 82, 54, 96, 40, 72, 34, 88, 48, 62, 30, 76, 50]
 
@@ -17,24 +29,29 @@ function QRMemorySection() {
       id={sectionIds.qrMemory}
       aria-labelledby="qr-memory-title"
     >
+      <span aria-hidden="true" className="qr-memory__glow" />
+      <span aria-hidden="true" className="grain grain--dark" />
+
       <Container className="qr-memory__inner">
         <Reveal className="qr-memory__content">
-          <p className="eyebrow">The QR memory</p>
+          <p className="eyebrow eyebrow--inverse">The QR memory</p>
 
           <h2 id="qr-memory-title" className="qr-memory__title">
-            Some memories deserve <em>more than a photo.</em>
+            <span>More than a gift.</span>
+            <em>A memory they can revisit.</em>
           </h2>
 
           <p className="qr-memory__lead">
-            Add a private digital memory to your gift and let them discover your
-            story when they scan the QR code.
+            Every piece can carry a small kraft tag. Behind it is a private page
+            — the photos, the voice note, the video and the words that never fit
+            on a card.
           </p>
 
           <ol className="qr-memory__flow">
             {scanFlow.map((step, index) => (
               <li key={step.id} className="qr-memory__flow-step">
                 <span className="qr-memory__flow-index" aria-hidden="true">
-                  {index + 1}
+                  {String(index + 1).padStart(2, '0')}
                 </span>
                 <span>
                   <span className="qr-memory__flow-title">{step.title}</span>
@@ -49,30 +66,37 @@ function QRMemorySection() {
           <ul className="qr-memory__layers">
             {memoryLayers.map((layer) => (
               <li key={layer.id} className="qr-memory__layer">
-                <Icon name={layer.icon} size={16} strokeWidth={1.6} />
+                <Icon name={layer.icon} size={15} strokeWidth={1.5} />
                 {layer.label}
               </li>
             ))}
           </ul>
 
-          <Button
-            to={paths.product('qr-memory-experience')}
-            variant="sage"
-            size="lg"
-            trailingIcon="arrowRight"
-          >
-            Discover QR Memory
-          </Button>
+          <div className="qr-memory__actions">
+            <Button
+              to={paths.product('qr-memory-experience')}
+              variant="light"
+              size="lg"
+              trailingIcon="arrowRight"
+            >
+              Discover QR Memory
+            </Button>
+
+            <p className="qr-memory__privacy">
+              <Icon name="lock" size={15} strokeWidth={1.4} />
+              Private by default — reachable only from their link
+            </p>
+          </div>
         </Reveal>
 
         <Reveal className="qr-memory__visual" delay={120}>
           <div className="qr-memory__gift">
             <div className="qr-memory__gift-media">
               <img
-                src={images.heroPuzzle}
-                alt="A personalized puzzle of a couple at sunset"
-                width="900"
-                height="1080"
+                src={images.customerGift}
+                alt="A personalized photo puzzle and a matching mug, boxed together and ready to give"
+                width="1200"
+                height="1592"
                 loading="lazy"
               />
             </div>
@@ -124,7 +148,13 @@ function QRMemorySection() {
               <ul className="qr-memory__screen-gallery">
                 {memoryGallery.map((source) => (
                   <li key={source}>
-                    <img src={source} alt="" width="400" height="400" loading="lazy" />
+                    <img
+                      src={source}
+                      alt=""
+                      width="400"
+                      height="400"
+                      loading="lazy"
+                    />
                   </li>
                 ))}
               </ul>

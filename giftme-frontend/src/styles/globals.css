@@ -45,6 +45,11 @@ h4 {
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-display);
   color: var(--color-text);
+  /* Fraunces is an optical-size variable face: let the browser pick the cut
+     that matches the rendered size, so a 5rem headline gets the display
+     drawing and a 1.2rem sub-head gets the text drawing. */
+  font-optical-sizing: auto;
+  text-wrap: balance;
 }
 
 p {
@@ -90,8 +95,8 @@ button {
 }
 
 ::selection {
-  background-color: var(--color-primary-light);
-  color: var(--color-text);
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 /* --- Focus -------------------------------------------------------------- */
@@ -99,7 +104,7 @@ button {
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 3px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
 }
 
 /* --- Utilities ----------------------------------------------------------- */
@@ -122,11 +127,11 @@ button {
   left: var(--space-2);
   z-index: calc(var(--z-overlay) + 1);
   padding: var(--space-3) var(--space-5);
-  background-color: var(--color-surface);
-  color: var(--color-primary);
+  background-color: var(--color-text);
+  color: var(--color-text-inverse);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
   transform: translateY(calc(-100% - var(--space-4)));
   transition: transform var(--transition-fast);
@@ -136,40 +141,70 @@ button {
   transform: translateY(0);
 }
 
-/* Small uppercase label that opens most sections */
+/* --- Eyebrow -------------------------------------------------------------
+   The small uppercase label that opens every section. One motif, used
+   everywhere: a short clay rule, then the label in muted ink. The centred
+   variant closes with a second rule so the mark stays symmetrical, and the
+   inverse variant is the same object on the two dark bands. */
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin: 0;
+  font-family: var(--font-body);
   font-size: var(--text-eyebrow);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-eyebrow);
+  line-height: 1.4;
   text-transform: uppercase;
-  color: var(--color-secondary-strong);
+  color: var(--color-text-muted);
 }
 
 .eyebrow::before {
   content: '';
-  width: 22px;
+  flex-shrink: 0;
+  width: 26px;
   height: 1px;
-  background-color: currentColor;
-  opacity: 0.5;
+  background-color: var(--color-accent);
 }
 
 .eyebrow--centered::after {
   content: '';
-  width: 22px;
+  flex-shrink: 0;
+  width: 26px;
   height: 1px;
-  background-color: currentColor;
-  opacity: 0.5;
+  background-color: var(--color-accent);
+}
+
+.eyebrow--inverse {
+  color: var(--color-text-inverse-muted);
+}
+
+/* --- Grain ---------------------------------------------------------------
+   A single tile of grayscale noise laid over a large flat field, at an opacity
+   low enough that it is felt rather than seen. Always decorative, always
+   behind content, never on top of type. */
+
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--texture-grain);
+  background-repeat: repeat;
+  opacity: 0.05;
+}
+
+.grain--dark {
+  opacity: 0.09;
+  mix-blend-mode: overlay;
 }
 
 /* --- Scroll reveal ------------------------------------------------------- */
 
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(20px);
   transition:
     opacity var(--transition-slow),
     transform var(--transition-slow);

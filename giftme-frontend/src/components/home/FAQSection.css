@@ -3,8 +3,8 @@
 }
 
 .faq__list {
-  margin-top: var(--space-7);
-  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-8);
+  border-top: 1px solid var(--color-border-strong);
 }
 
 .faq__item {
@@ -22,12 +22,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-5);
   width: 100%;
   padding-block: var(--space-5);
   font-family: var(--font-heading);
-  font-size: 1.2rem;
-  line-height: 1.35;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-tight);
   text-align: left;
   color: var(--color-text);
   transition: color var(--transition-fast);
@@ -37,14 +38,19 @@
   color: var(--color-primary);
 }
 
-.faq__chevron {
+/* A plus that becomes a minus. Quieter than a chevron that spins, and it says
+   "open / close" rather than "there is more below". */
+.faq__mark {
   flex-shrink: 0;
-  color: var(--color-primary);
-  transition: transform var(--transition-base);
+  color: var(--color-accent-strong);
+  transition:
+    transform var(--transition-base),
+    color var(--transition-fast);
 }
 
-.faq__trigger[aria-expanded='true'] .faq__chevron {
+.faq__trigger[aria-expanded='true'] .faq__mark {
   transform: rotate(180deg);
+  color: var(--color-text);
 }
 
 .faq__panel {
@@ -67,6 +73,8 @@
 
 .faq__answer {
   padding-bottom: var(--space-5);
-  max-width: 62ch;
+  max-width: 64ch;
+  font-size: var(--text-sm);
+  line-height: 1.75;
   color: var(--color-text-muted);
 }
