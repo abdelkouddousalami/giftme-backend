@@ -7,17 +7,32 @@ BACKEND_DIR="$ROOT_DIR/backend"
 FRONTEND_DIR="$ROOT_DIR/giftme-frontend"
 
 
-JAVA21="$HOME/.local/jdks/jdk-21.0.12+8"
-if [ ! -x "$JAVA21/bin/java" ]; then
-  echo "error: JDK 21 not found at $JAVA21 (or it's not executable)." >&2
-  echo "Install one, e.g.: sudo apt install openjdk-21-jdk" >&2
+# JDK 21: macOS (Homebrew keg or java_home) first, then the Linux install path.
+if [ -x /opt/homebrew/opt/openjdk@21/bin/java ]; then
+  JAVA21="/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+elif [ -x /usr/libexec/java_home ] && JAVA21="$(/usr/libexec/java_home -v 21 2>/dev/null)"; then
+  :
+elif [ -x "$HOME/.local/jdks/jdk-21.0.12+8/bin/java" ]; then
+  JAVA21="$HOME/.local/jdks/jdk-21.0.12+8"
+else
+  echo "error: no JDK 21 found." >&2
+  echo "Install one: brew install openjdk@21 (macOS) or sudo apt install openjdk-21-jdk (Linux)" >&2
   exit 1
 fi
 export JAVA_HOME="$JAVA21"
 export PATH="$JAVA_HOME/bin:$PATH"
 
+if ! command -v mvn >/dev/null 2>&1; then
+  echo "error: mvn not found. Install it: brew install maven (macOS) or sudo apt install maven (Linux)" >&2
+  exit 1
+fi
 
-export PUBLIC_APP_URL="http://localhost:5173"
+# The illizeo dev stack holds 8080 (phpmyadmin) and 5173 (frontend), so GiftMe
+# runs on 8081/5174 locally and both stacks can coexist.
+export SERVER_PORT=8081
+export CORS_ALLOWED_ORIGINS="http://localhost:5173,http://localhost:5174"
+export PUBLIC_APP_URL="http://localhost:5174"
+export VITE_API_BASE_URL="http://localhost:8081"
 
 PG_CONTAINER="giftme-postgres"
 if ! docker ps --format '{{.Names}}' | grep -qx "$PG_CONTAINER"; then
@@ -59,7 +74,7 @@ run_backend() {
 run_frontend() {
   trap - EXIT INT TERM
   cd "$FRONTEND_DIR"
-  npm run dev 2>&1 | sed -u 's/^/[frontend] /'
+  npm run dev -- --port 5174 --strictPort 2>&1 | sed -u 's/^/[frontend] /'
 }
 
 # Kill the whole process 
@@ -73,7 +88,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-echo "==> Starting backend on http://localhost:8080 and frontend on http://localhost:5173"
+echo "==> Starting backend on http://localhost:8081 and frontend on http://localhost:5174"
 echo "    Admin login: aelalami / abdo@3214 - Ctrl+C stops both."
 echo
 

@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Hero — the one section on the site with a reserved layout.
+
+   The headline and the flanking product columns both scale with the viewport,
+   so leaving the gap between them to chance does not work: measured across
+   768–1920px, the corridor swung between 195px and MINUS 69px, the columns
+   landing on top of the type at three common widths.
+
+   So the corridor is declared instead of hoped for. `--hero-col` is the width
+   of each side column and `--hero-gap` the minimum air beside it; the centre
+   column is capped at whatever is left. The headline wraps to a third line
+   before it can ever reach a photograph, and the guarantee holds at every
+   width without a single breakpoint-specific override.
+
+   Below `md` there are no side columns, both variables are zero, and the
+   centre gets the full container — see HeroSection.jsx for the phone
+   composition that replaces them.
+   ========================================================================== */
+
+.hero {
+  --hero-col: 0px;
+  --hero-gap: 0px;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+@media (min-width: 48rem) {
+  .hero {
+    --hero-col: clamp(6rem, 12.5vw, 13.5rem);
+    --hero-gap: clamp(2.5rem, 4vw, 4.5rem);
+  }
+}
+
+/**
+ * `width: 100%` is load-bearing, not a tidy-up. As a shrink-to-fit flex item
+ * this box resolved to its widest *other* child — the lead paragraph's 44ch —
+ * which left the headline wrapping at ~380px while 514px was free beside it
+ * (globals.css sets `text-wrap: balance` on h1, and Chrome's balancing reports
+ * a narrower intrinsic size than the text actually needs). Taking the full cap
+ * explicitly hands the headline every pixel the side columns are not using, so
+ * it breaks to a second line only when it genuinely cannot fit.
+ */
+.hero__content {
+  width: 100%;
+  max-width: calc(100% - 2 * (var(--hero-col) + var(--hero-gap)));
+  margin-inline: auto;
+}
+
+.hero__aside {
+  width: var(--hero-col);
+}

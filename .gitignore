@@ -20,3 +20,12 @@ node_modules/
 *.iml
 *.swp
 .DS_Store
+
+# Design sources kept on disk but never committed: multi-megabyte PNG masters
+# and camera-roll originals under UUID filenames. The shipped logo is the
+# lossless WebP re-encode (giftme-frontend/src/assets/images/brand-logo.webp);
+# see that folder's README.md. Committing these made `git push` time out.
+giftme-frontend/src/assets/images/[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]-*.png
+giftme-frontend/src/assets/images/brand-logo-master.png
+*\ copie.*
+*\ copy.*
