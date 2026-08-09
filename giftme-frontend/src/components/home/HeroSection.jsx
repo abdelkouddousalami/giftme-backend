@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
@@ -37,6 +38,7 @@ const STRIP = [
 ]
 
 function HeroSection() {
+  const { t } = useTranslation()
   return (
     <section className="hero" aria-labelledby="hero-title">
       <HeroBackdrop />
@@ -45,7 +47,7 @@ function HeroSection() {
       <Container className="relative z-10 flex min-h-[clamp(27rem,64svh,36rem)] flex-col items-center justify-center py-(--section-y-lg) text-center">
         <div className="hero__content flex flex-col items-center">
           <p className="eyebrow eyebrow--centered animate-rise">
-            Personalized gift studio
+            {t('home.hero.eyebrow')}
           </p>
 
           <h1
@@ -61,13 +63,13 @@ function HeroSection() {
               className="block animate-rise"
               style={{ animationDelay: '90ms' }}
             >
-              Create a gift
+              {t('home.hero.titleLine1')}
             </span>
             <em
               className="block animate-rise text-burgundy italic"
               style={{ animationDelay: '180ms' }}
             >
-              they will never forget.
+              {t('home.hero.titleLine2')}
             </em>
           </h1>
 
@@ -75,8 +77,7 @@ function HeroSection() {
             className="mt-7 max-w-[44ch] animate-rise text-ink-soft [font-size:var(--text-xl)]"
             style={{ animationDelay: '280ms' }}
           >
-            Personalized gifts made to mean more. Add your message, your
-            memories and a private QR experience.
+            {t('home.hero.lead')}
           </p>
 
           <div
@@ -84,7 +85,7 @@ function HeroSection() {
             style={{ animationDelay: '380ms' }}
           >
             <Button to={paths.shop} size="lg">
-              Create Your Gift
+              {t('home.hero.cta')}
             </Button>
 
             {/* Not a second button. A hairline that draws itself in on hover —
@@ -96,16 +97,16 @@ function HeroSection() {
               className="group inline-flex items-center gap-2 py-1 text-[0.9375rem] font-medium text-ink transition-colors duration-200 hover:text-burgundy"
             >
               <span className="relative">
-                <span>Explore Gifts</span>
+                <span>{t('home.hero.explore')}</span>
                 <span
                   aria-hidden="true"
-                  className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100"
+                  className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100 rtl:right-0 rtl:left-auto rtl:origin-right"
                 />
               </span>
               <Icon
                 name="arrowRight"
                 size={17}
-                className="transition-transform duration-200 ease-brand group-hover:translate-x-1"
+                className="transition-transform duration-200 ease-brand group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
               />
             </a>
           </div>

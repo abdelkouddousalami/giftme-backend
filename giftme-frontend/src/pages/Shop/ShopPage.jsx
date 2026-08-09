@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../../components/common/Container.jsx'
 import SectionHeading from '../../components/common/SectionHeading.jsx'
 import Reveal from '../../components/common/Reveal.jsx'
@@ -46,6 +47,7 @@ const GRID_CLASS = [
 ].join(' ')
 
 function ShopPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const resultsRef = useRef(null)
 
@@ -166,13 +168,13 @@ function ShopPage() {
   let results
 
   if (error) {
-    status = 'Results unavailable'
+    status = t('shop.resultsUnavailable')
     results = <ErrorState error={error} onRetry={retryAll} />
   } else if (loading) {
-    status = 'Finding gifts…'
+    status = t('shop.finding')
     results = <ProductGrid loading />
   } else {
-    status = resultSummary(total, category, search)
+    status = resultSummary(t, total, category, search)
     results = hasResults ? (
       <ProductGrid products={products} />
     ) : (
@@ -198,13 +200,13 @@ function ShopPage() {
             <SectionHeading
               as="h1"
               id="shop-title"
-              eyebrow="The shop"
+              eyebrow={t('shop.eyebrow')}
               title={
                 <>
-                  Every gift here <em>becomes yours.</em>
+                  {t('shop.titleLine1')} <em>{t('shop.titleEm')}</em>
                 </>
               }
-              description="Printed with your photo, finished by hand, and delivered with a private memory waiting behind the tag. Browse the range, then make one of them personal."
+              description={t('shop.description')}
             />
           </div>
         </Container>
@@ -242,7 +244,7 @@ function ShopPage() {
                 onClick={clearFilters}
                 className="font-medium text-burgundy underline underline-offset-4 transition-colors duration-200 hover:text-burgundy-deep [font-size:var(--text-sm)]"
               >
-                Clear filters
+                {t('shop.clearFilters')}
               </button>
             ) : null}
           </div>
@@ -311,17 +313,15 @@ export function ProductGrid({ products = [], loading = false }) {
  * that was working. Only the page index is wrong, so only the page is offered.
  */
 function ShopEmptyState({ hasFilters, pastLastPage, onClearFilters, onBackToStart, onRetry }) {
+  const { t } = useTranslation()
+
   if (pastLastPage) {
     return (
       <EmptyState
         icon="box"
-        title="That page is empty"
-        description={
-          hasFilters
-            ? 'There are fewer pages of matching gifts than this. Head back to the first page of these results.'
-            : 'There are fewer pages of gifts than this. Head back to the beginning of the shop.'
-        }
-        actionLabel="Back to the first page"
+        title={t('shop.emptyPageTitle')}
+        description={hasFilters ? t('shop.emptyPageWithFilters') : t('shop.emptyPageNoFilters')}
+        actionLabel={t('shop.backToFirstPage')}
         onAction={onBackToStart}
       />
     )
@@ -331,9 +331,9 @@ function ShopEmptyState({ hasFilters, pastLastPage, onClearFilters, onBackToStar
     return (
       <EmptyState
         icon="search"
-        title="Nothing matches that yet"
-        description="No gift in the catalog fits those filters. Try a different category, or a shorter search."
-        actionLabel="Clear filters"
+        title={t('shop.noMatchTitle')}
+        description={t('shop.noMatchDescription')}
+        actionLabel={t('shop.clearFilters')}
         onAction={onClearFilters}
       />
     )
@@ -342,20 +342,19 @@ function ShopEmptyState({ hasFilters, pastLastPage, onClearFilters, onBackToStar
   return (
     <EmptyState
       icon="gift"
-      title="The shop is being restocked"
-      description="There are no gifts published right now. Nothing is broken — there is simply nothing to show yet. Please check back soon."
-      actionLabel="Refresh"
+      title={t('shop.restockingTitle')}
+      description={t('shop.restockingDescription')}
+      actionLabel={t('shop.refresh')}
       onAction={onRetry}
     />
   )
 }
 
 /** "12 gifts in Mugs", "1 gift for “frame”" — the count with its context. */
-function resultSummary(total, category, search) {
-  const noun = total === 1 ? 'gift' : 'gifts'
-  const parts = [`${total} ${noun}`]
-  if (category) parts.push(`in ${category}`)
-  if (search) parts.push(`for “${search}”`)
+function resultSummary(t, total, category, search) {
+  const parts = [t('shop.resultCount', { count: total })]
+  if (category) parts.push(t('shop.inCategory', { category }))
+  if (search) parts.push(t('shop.forSearch', { search }))
   return parts.join(' ')
 }
 

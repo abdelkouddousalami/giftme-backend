@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Icon from '../../components/common/Icon.jsx'
 import { Field, SelectField } from '../../components/ui/Field.jsx'
 
@@ -27,12 +28,23 @@ import { Field, SelectField } from '../../components/ui/Field.jsx'
  * an unknown property, so the shop page validates the URL parameter against
  * this list before it ever reaches the backend.
  */
+// No `label` here - ShopPage only reads `value` off this list (to whitelist a
+// hand-edited URL's ?sort= before it reaches the backend), and ShopToolbar
+// looks the label up by value from the `shop.*` translation namespace instead,
+// via SORT_LABEL_KEYS below.
 export const SORT_OPTIONS = [
-  { value: 'createdAt,desc', label: 'Newest' },
-  { value: 'price,asc', label: 'Price: low to high' },
-  { value: 'price,desc', label: 'Price: high to low' },
-  { value: 'name,asc', label: 'Name A–Z' },
+  { value: 'createdAt,desc' },
+  { value: 'price,asc' },
+  { value: 'price,desc' },
+  { value: 'name,asc' },
 ]
+
+const SORT_LABEL_KEYS = {
+  'createdAt,desc': 'shop.sortNewest',
+  'price,asc': 'shop.sortPriceAsc',
+  'price,desc': 'shop.sortPriceDesc',
+  'name,asc': 'shop.sortNameAsc',
+}
 
 export const DEFAULT_SORT = 'createdAt,desc'
 
@@ -43,7 +55,7 @@ const SEARCH_INPUT_CLASS = [
   // No preflight: the input carries its UA border and appearance unless both
   // are stated here (Field.jsx's own controls do the same).
   'w-full appearance-none rounded-(--radius-sm) border border-line-input bg-white',
-  'py-2.5 pr-11 pl-10 text-ink [font-size:var(--text-sm)]',
+  'py-2.5 pe-11 ps-10 text-ink [font-size:var(--text-sm)]',
   'transition-colors duration-200 placeholder:text-ink-soft',
   'focus:border-burgundy focus:outline-none',
   // We draw our own clear button; hide WebKit's duplicate.
@@ -66,6 +78,7 @@ function ShopToolbar({
   categoryTo,
   clearCount,
 }) {
+  const { t } = useTranslation()
   const searchInputId = useId()
   const [draft, setDraft] = useState(search)
 
@@ -142,12 +155,12 @@ function ShopToolbar({
 
       <div className="flex border-t border-line pt-6 max-sm:flex-col max-sm:gap-5 sm:flex-row sm:items-end sm:gap-4">
         <form role="search" onSubmit={handleSubmit} className="sm:flex-1">
-          <Field label="Search the shop" htmlFor={searchInputId}>
+          <Field label={t('shop.searchLabel')} htmlFor={searchInputId}>
             <div className="relative">
               <Icon
                 name="search"
                 size={17}
-                className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink-soft"
+                className="pointer-events-none absolute top-1/2 start-3.5 -translate-y-1/2 text-ink-soft"
               />
 
               <input
@@ -156,7 +169,7 @@ function ShopToolbar({
                 name="search"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder="Mug, frame, a name…"
+                placeholder={t('shop.searchPlaceholder')}
                 autoComplete="off"
                 className={SEARCH_INPUT_CLASS}
               />
@@ -165,8 +178,8 @@ function ShopToolbar({
                 <button
                   type="button"
                   onClick={handleClear}
-                  aria-label="Clear search"
-                  className="absolute top-1/2 right-2.5 flex size-7 -translate-y-1/2 items-center justify-center rounded-(--radius-pill) text-ink-soft transition-colors duration-200 hover:bg-bone hover:text-ink"
+                  aria-label={t('shop.clearSearch')}
+                  className="absolute top-1/2 end-2.5 flex size-7 -translate-y-1/2 items-center justify-center rounded-(--radius-pill) text-ink-soft transition-colors duration-200 hover:bg-bone hover:text-ink"
                 >
                   <Icon name="close" size={15} />
                 </button>
@@ -178,19 +191,19 @@ function ShopToolbar({
               update while typing, so the button is for keyboard and screen
               reader users who expect a form to have one. */}
           <button type="submit" className="sr-only">
-            Search
+            {t('shop.search')}
           </button>
         </form>
 
         <SelectField
-          label="Sort by"
+          label={t('shop.sortBy')}
           value={sort}
           onChange={(event) => onSortChange(event.target.value)}
           className="max-sm:w-full sm:w-60"
         >
           {SORT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {t(SORT_LABEL_KEYS[option.value])}
             </option>
           ))}
         </SelectField>
@@ -217,6 +230,8 @@ function CategoryFilter({
   categoryTo,
   showCounts,
 }) {
+  const { t } = useTranslation()
+
   if (loading) {
     return (
       <ul aria-hidden="true" className="flex animate-pulse flex-wrap gap-2.5">
@@ -235,8 +250,8 @@ function CategoryFilter({
       >
         <p className="text-burgundy-deep [font-size:var(--text-sm)]">
           {error.isNetwork
-            ? "The category filters couldn't load — the server did not respond."
-            : `The category filters couldn't load: ${error.message}`}
+            ? t('shop.categoriesErrorNetwork')
+            : t('shop.categoriesError', { message: error.message })}
         </p>
         {/* Deliberately not "Try again": the grid below has a retry of its own
             when it fails too, and two identical buttons on one screen is a
@@ -246,7 +261,7 @@ function CategoryFilter({
           onClick={onRetry}
           className="font-medium text-burgundy-deep underline underline-offset-4 [font-size:var(--text-sm)]"
         >
-          Reload filters
+          {t('shop.reloadFilters')}
         </button>
       </div>
     )
@@ -255,11 +270,11 @@ function CategoryFilter({
   if (!categories?.length) return null
 
   return (
-    <nav aria-label="Filter by category">
+    <nav aria-label={t('shop.filterByCategory')}>
       <ul className="flex flex-wrap gap-2.5">
         <li>
           <Chip to={categoryTo(null)} active={!activeCategory}>
-            All gifts
+            {t('shop.allGifts')}
           </Chip>
         </li>
 

@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Button from '../../components/common/Button.jsx'
 import Icon from '../../components/common/Icon.jsx'
 import Spinner from '../../components/ui/Spinner.jsx'
@@ -35,28 +36,31 @@ const LIMITS = {
 /**
  * `font` is a free-text column on the backend — this fixed list is purely a UI
  * affordance so two shoppers asking for the same face send the same string to
- * the workshop, instead of "Script", "script" and "cursive please".
+ * the workshop, instead of "Script", "script" and "cursive please". `value` is
+ * what travels to the backend and gets printed, so it stays a fixed English
+ * face name in every language; `key` only picks the on-screen label out of the
+ * `product.personalizationPanel.fonts` translation namespace.
  */
 const FONTS = [
-  { value: 'Fraunces', label: 'Fraunces — classic serif' },
-  { value: 'Inter', label: 'Inter — clean sans' },
-  { value: 'Cormorant Garamond', label: 'Cormorant Garamond — fine serif' },
-  { value: 'Montserrat', label: 'Montserrat — geometric sans' },
-  { value: 'Dancing Script', label: 'Dancing Script — handwritten' },
+  { value: 'Fraunces', key: 'fraunces' },
+  { value: 'Inter', key: 'inter' },
+  { value: 'Cormorant Garamond', key: 'cormorant' },
+  { value: 'Montserrat', key: 'montserrat' },
+  { value: 'Dancing Script', key: 'dancing' },
 ]
 
 /** Same reasoning as FONTS: `occasion` is free text (max 100) on the backend. */
 const OCCASIONS = [
-  'Birthday',
-  'Anniversary',
-  'Wedding',
-  'Engagement',
-  'New baby',
-  "Mother's Day",
-  "Father's Day",
-  'Graduation',
-  'Thank you',
-  'Just because',
+  { value: 'Birthday', key: 'birthday' },
+  { value: 'Anniversary', key: 'anniversary' },
+  { value: 'Wedding', key: 'wedding' },
+  { value: 'Engagement', key: 'engagement' },
+  { value: 'New baby', key: 'newBaby' },
+  { value: "Mother's Day", key: 'mothersDay' },
+  { value: "Father's Day", key: 'fathersDay' },
+  { value: 'Graduation', key: 'graduation' },
+  { value: 'Thank you', key: 'thankYou' },
+  { value: 'Just because', key: 'justBecause' },
 ]
 
 /**
@@ -65,11 +69,11 @@ const OCCASIONS = [
  * chip on screen is the ink that gets printed.
  */
 const TEXT_COLORS = [
-  { label: 'Ink', value: '#1E1C1A', css: 'var(--color-charcoal)' },
-  { label: 'Burgundy', value: '#7B3B3F', css: 'var(--color-burgundy)' },
-  { label: 'Clay', value: '#B4674A', css: 'var(--color-clay)' },
-  { label: 'Olive', value: '#6B7355', css: 'var(--color-olive)' },
-  { label: 'White', value: '#FFFFFF', css: 'var(--color-white)' },
+  { key: 'ink', value: '#1E1C1A', css: 'var(--color-charcoal)' },
+  { key: 'burgundy', value: '#7B3B3F', css: 'var(--color-burgundy)' },
+  { key: 'clay', value: '#B4674A', css: 'var(--color-clay)' },
+  { key: 'olive', value: '#6B7355', css: 'var(--color-olive)' },
+  { key: 'white', value: '#FFFFFF', css: 'var(--color-white)' },
 ]
 
 /** A blank draft in exactly the shape `CustomizationRequest` is deserialized from. */
@@ -170,6 +174,7 @@ function MediaPreview({ kind, url, imageAlt }) {
 }
 
 function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
+  const { t } = useTranslation()
   const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
@@ -186,7 +191,10 @@ function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
     setError(null)
 
     if (file.size > limits.maxBytes) {
-      setError(`That file is ${megabytes(file.size)}. The limit is ${megabytes(limits.maxBytes)}.`)
+      setError(t('product.personalizationPanel.fileTooLarge', {
+        size: megabytes(file.size),
+        limit: megabytes(limits.maxBytes),
+      }))
       return
     }
 
@@ -222,9 +230,12 @@ function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
             size="sm"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            aria-label={`${value ? 'Replace the file for' : 'Choose a file for'} ${label.toLowerCase()}`}
+            aria-label={t(
+              value ? 'product.personalizationPanel.replaceFileFor' : 'product.personalizationPanel.chooseFileFor',
+              { label: label.toLowerCase() },
+            )}
           >
-            {value ? 'Replace file' : 'Choose a file'}
+            {value ? t('product.personalizationPanel.replaceFile') : t('product.personalizationPanel.chooseFile')}
           </Button>
 
           {value ? (
@@ -236,9 +247,9 @@ function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
                 onChange(null)
               }}
               disabled={uploading}
-              aria-label={`Remove ${label.toLowerCase()}`}
+              aria-label={t('product.personalizationPanel.removeFor', { label: label.toLowerCase() })}
             >
-              Remove
+              {t('product.personalizationPanel.remove')}
             </Button>
           ) : null}
 
@@ -246,14 +257,14 @@ function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
               this is an honest indeterminate wait rather than a fake percentage. */}
           {uploading ? (
             <span className="inline-flex items-center gap-2 text-ink-soft [font-size:var(--text-xs)]">
-              <Spinner size={14} label="Uploading" />
-              Uploading…
+              <Spinner size={14} label={t('product.personalizationPanel.uploading')} />
+              {t('product.personalizationPanel.uploading')}
             </span>
           ) : null}
         </div>
 
         <p className="text-ink-soft [font-size:var(--text-xs)]">
-          {hint} Up to {megabytes(limits.maxBytes)}.
+          {hint} {t('product.personalizationPanel.upTo', { size: megabytes(limits.maxBytes) })}
         </p>
 
         {error ? <ErrorNotice error={error} /> : null}
@@ -273,6 +284,7 @@ function MediaUploadField({ kind, label, hint, value, onChange, imageAlt }) {
 }
 
 function PersonalizationPanel({ value, onChange, product }) {
+  const { t } = useTranslation()
   const set = (key, next) => onChange({ ...value, [key]: next })
 
   /** Ties the QR opt-in's accessible name and description to the right spans. */
@@ -309,22 +321,22 @@ function PersonalizationPanel({ value, onChange, product }) {
     <div className="flex flex-col gap-7">
       <MediaUploadField
         kind="image"
-        label="Your photo"
-        hint="JPG, PNG, WebP or GIF."
-        imageAlt="The photo you uploaded to print on this gift"
+        label={t('product.personalizationPanel.yourPhoto')}
+        hint={t('product.personalizationPanel.photoHint')}
+        imageAlt={t('product.personalizationPanel.photoAlt')}
         value={value.imageUrl}
         onChange={(url) => set('imageUrl', url)}
       />
 
       <TextAreaField
-        label="Text on the gift"
+        label={t('product.personalizationPanel.textLabel')}
         rows={3}
         maxLength={LIMITS.text}
         value={value.text}
         onChange={(event) => set('text', event.target.value)}
-        placeholder="Names, a date, a short line…"
+        placeholder={t('product.personalizationPanel.textPlaceholder')}
         hint={hintWithCount(
-          `Printed exactly as typed on your ${product?.name ?? 'gift'}.`,
+          t('product.personalizationPanel.textHint', { product: product?.name ?? t('common.brand') }),
           value.text,
           LIMITS.text,
         )}
@@ -332,29 +344,29 @@ function PersonalizationPanel({ value, onChange, product }) {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <SelectField
-          label="Font"
+          label={t('product.personalizationPanel.font')}
           value={value.font}
           onChange={(event) => set('font', event.target.value)}
-          hint="How the text is lettered."
+          hint={t('product.personalizationPanel.fontHint')}
         >
-          <option value="">Let GiftMe choose</option>
+          <option value="">{t('product.personalizationPanel.fontLetGiftMeChoose')}</option>
           {FONTS.map((font) => (
             <option key={font.value} value={font.value}>
-              {font.label}
+              {t(`product.personalizationPanel.fonts.${font.key}`)}
             </option>
           ))}
         </SelectField>
 
         <SelectField
-          label="Occasion"
+          label={t('product.personalizationPanel.occasion')}
           value={value.occasion}
           onChange={(event) => set('occasion', event.target.value)}
-          hint="Helps us pack it right."
+          hint={t('product.personalizationPanel.occasionHint')}
         >
-          <option value="">Not sure yet</option>
+          <option value="">{t('product.personalizationPanel.occasionNotSure')}</option>
           {OCCASIONS.map((occasion) => (
-            <option key={occasion} value={occasion}>
-              {occasion}
+            <option key={occasion.value} value={occasion.value}>
+              {t(`product.personalizationPanel.occasions.${occasion.key}`)}
             </option>
           ))}
         </SelectField>
@@ -362,12 +374,13 @@ function PersonalizationPanel({ value, onChange, product }) {
 
       <fieldset className="m-0 border-0 p-0">
         <legend className="mb-2.5 p-0 text-[0.6875rem] font-medium tracking-[0.14em] text-ink uppercase">
-          Text colour
+          {t('product.personalizationPanel.textColor')}
         </legend>
 
         <ul className="flex flex-wrap gap-2.5">
           {TEXT_COLORS.map((swatch) => {
             const selected = value.textColor === swatch.value
+            const swatchLabel = t(`product.personalizationPanel.colors.${swatch.key}`)
             return (
               <li key={swatch.value}>
                 <button
@@ -375,7 +388,7 @@ function PersonalizationPanel({ value, onChange, product }) {
                   aria-pressed={selected}
                   onClick={() => set('textColor', selected ? '' : swatch.value)}
                   className={[
-                    'flex items-center gap-2 rounded-(--radius-pill) border py-1 pr-3.5 pl-1',
+                    'flex items-center gap-2 rounded-(--radius-pill) border py-1 pe-3.5 ps-1',
                     'transition-colors duration-200',
                     selected ? 'border-ink bg-bone' : 'border-line-strong hover:border-ink',
                   ].join(' ')}
@@ -385,7 +398,7 @@ function PersonalizationPanel({ value, onChange, product }) {
                     className="size-5 rounded-(--radius-pill) border border-line-strong"
                     style={{ backgroundColor: swatch.css }}
                   />
-                  <span className="[font-size:var(--text-xs)]">{swatch.label}</span>
+                  <span className="[font-size:var(--text-xs)]">{swatchLabel}</span>
                 </button>
               </li>
             )
@@ -394,31 +407,37 @@ function PersonalizationPanel({ value, onChange, product }) {
 
         <p className="mt-2.5 text-ink-soft [font-size:var(--text-xs)]">
           {selectedColor
-            ? `Printed in ${selectedColor.label.toLowerCase()}.`
-            : 'Optional — we default to ink.'}
+            ? t('product.personalizationPanel.textColorPrinted', {
+                color: t(`product.personalizationPanel.colors.${selectedColor.key}`).toLowerCase(),
+              })
+            : t('product.personalizationPanel.textColorOptional')}
         </p>
       </fieldset>
 
       <TextField
-        label="Who is it for"
+        label={t('product.personalizationPanel.recipientLabel')}
         maxLength={LIMITS.recipientName}
         value={value.recipientName}
         onChange={(event) => set('recipientName', event.target.value)}
-        placeholder="Their name"
-        hint={hintWithCount('Also titles the memory page.', value.recipientName, LIMITS.recipientName)}
+        placeholder={t('product.personalizationPanel.recipientPlaceholder')}
+        hint={hintWithCount(
+          t('product.personalizationPanel.recipientHint'),
+          value.recipientName,
+          LIMITS.recipientName,
+        )}
       />
 
       <TextAreaField
-        label="Gift message"
+        label={t('product.personalizationPanel.giftMessage')}
         rows={4}
         maxLength={LIMITS.giftMessage}
         value={value.giftMessage}
         onChange={(event) => set('giftMessage', event.target.value)}
-        placeholder="The note that goes with it…"
+        placeholder={t('product.personalizationPanel.giftMessagePlaceholder')}
         hint={hintWithCount(
           value.qrMemoryEnabled
-            ? 'Included with the gift and shown on the memory page.'
-            : 'Included with the gift.',
+            ? t('product.personalizationPanel.giftMessageHintWithMemory')
+            : t('product.personalizationPanel.giftMessageHint'),
           value.giftMessage,
           LIMITS.giftMessage,
         )}
@@ -456,16 +475,15 @@ function PersonalizationPanel({ value, onChange, product }) {
           <span className="flex flex-col gap-1.5">
             <span id={`${qrFieldId}-title`} className="flex items-center gap-2 font-medium">
               <Icon name="qr" size={17} className="text-clay-deep" />
-              Add a QR Memory
+              {t('product.personalizationPanel.addQrMemory')}
             </span>
             <span
               id={`${qrFieldId}-description`}
               className="text-ink-soft [font-size:var(--text-sm)]"
             >
-              We create a private page built from what you filled in above — the name titles it,
-              the gift message is its note, your photo opens it. A QR tag on the gift opens it at{' '}
-              <span className="text-ink">/m/your-code</span>, and the same link is issued with your
-              order. No account, no search: only someone holding the gift or the link can reach it.
+              {t('product.personalizationPanel.qrMemoryDescription')}{' '}
+              <span className="text-ink">/m/your-code</span>
+              {t('product.personalizationPanel.qrMemoryDescriptionEnd')}
             </span>
           </span>
         </label>
@@ -474,24 +492,23 @@ function PersonalizationPanel({ value, onChange, product }) {
           <div className="mt-6 flex flex-col gap-6 border-t border-line pt-6">
             <MediaUploadField
               kind="video"
-              label="Video message"
-              hint="MP4, MOV or WebM."
+              label={t('product.personalizationPanel.videoMessage')}
+              hint={t('product.personalizationPanel.videoHint')}
               value={value.videoUrl}
               onChange={(url) => set('videoUrl', url)}
             />
 
             <MediaUploadField
               kind="audio"
-              label="Voice note or song"
-              hint="MP3, WAV, OGG or M4A."
+              label={t('product.personalizationPanel.voiceNote')}
+              hint={t('product.personalizationPanel.voiceHint')}
               value={value.audioUrl}
               onChange={(url) => set('audioUrl', url)}
             />
 
             {memoryIsEmpty ? (
               <p className="rounded-(--radius-sm) border border-line-strong bg-bone px-4 py-3 text-ink-soft [font-size:var(--text-sm)]">
-                Your memory page has nothing on it yet. Add a photo, a video, a voice note, a name
-                or a gift message and it will be built from those.
+                {t('product.personalizationPanel.memoryEmptyWarning')}
               </p>
             ) : null}
           </div>

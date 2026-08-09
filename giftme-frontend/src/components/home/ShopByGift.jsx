@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
@@ -32,6 +33,7 @@ import { paths, sectionIds } from '../../app/paths.js'
 const FEATURED_COUNT = 4
 
 function ShopByGift() {
+  const { t } = useTranslation()
   const { data, error, loading, run } = useAsync(
     () => listProducts({ size: FEATURED_COUNT, sort: 'createdAt,desc' }),
     [],
@@ -57,15 +59,15 @@ function ShopByGift() {
     }
 
     if (error) {
-      return <ErrorState error={error} onRetry={run} title="We couldn't load the catalog" />
+      return <ErrorState error={error} onRetry={run} title={t('home.shopByGift.errorTitle')} />
     }
 
     if (products.length === 0) {
       return (
         <EmptyState
           icon="gift"
-          title="Nothing in the shop just yet"
-          description="New gifts are on their way. Check back shortly."
+          title={t('home.shopByGift.emptyTitle')}
+          description={t('home.shopByGift.emptyDescription')}
         />
       )
     }
@@ -91,13 +93,13 @@ function ShopByGift() {
         <Reveal className="flex max-wide:flex-col max-wide:gap-7 wide:flex-row wide:items-end wide:justify-between wide:gap-16">
           <SectionHeading
             id="gifts-title"
-            eyebrow="The shop"
+            eyebrow={t('home.shopByGift.eyebrow')}
             title={
               <>
-                Find something <em>worth remembering.</em>
+                {t('home.shopByGift.titleLine1')} <em>{t('home.shopByGift.titleEm')}</em>
               </>
             }
-            description="Each one printed with your photo, packed by hand, and ready to carry a private memory behind its tag."
+            description={t('home.shopByGift.description')}
           />
 
           <Link
@@ -105,16 +107,16 @@ function ShopByGift() {
             className="group inline-flex shrink-0 items-center gap-2 text-[0.875rem] font-medium text-ink transition-colors duration-200 hover:text-burgundy max-wide:self-start wide:mb-2 wide:self-auto"
           >
             <span className="relative">
-              <span>View all gifts</span>
+              <span>{t('home.shopByGift.viewAll')}</span>
               <span
                 aria-hidden="true"
-                className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100"
+                className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100 rtl:right-0 rtl:left-auto rtl:origin-right"
               />
             </span>
             <Icon
               name="arrowRight"
               size={16}
-              className="transition-transform duration-200 ease-brand group-hover:translate-x-1"
+              className="transition-transform duration-200 ease-brand group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
             />
           </Link>
         </Reveal>

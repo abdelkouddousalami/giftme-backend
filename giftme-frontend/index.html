@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#FAF7F1" />
+    <meta name="theme-color" content="#FAF7F1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#17140F" media="(prefers-color-scheme: dark)" />
     <title>GiftMe — Personalized gifts, made to mean more</title>
     <meta
       name="description"
@@ -30,6 +31,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Applies a saved theme choice before first paint, so the page never
+         flashes light-then-dark (or vice versa) on load. ThemeContext owns
+         this same logic for everything after the initial render. -->
+    <script>
+      try {
+        var theme = localStorage.getItem('giftme-theme')
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', theme)
+        }
+      } catch (e) {}
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -32,7 +32,7 @@ export function Field({ label, hint, error, required, htmlFor, children, classNa
         >
           {label}
           {required ? (
-            <span aria-hidden="true" className="ml-1 text-clay-deep">
+            <span aria-hidden="true" className="ms-1 text-clay-deep">
               *
             </span>
           ) : null}
@@ -99,7 +99,7 @@ export function SelectField({ label, hint, error, required, children, className,
           id={id}
           required={required}
           aria-invalid={error ? 'true' : undefined}
-          className={[CONTROL_CLASS, 'pr-10', error ? 'border-burgundy' : ''].join(' ')}
+          className={[CONTROL_CLASS, 'pe-10', error ? 'border-burgundy' : ''].join(' ')}
         >
           {children}
         </select>
@@ -113,7 +113,7 @@ export function SelectField({ label, hint, error, required, children, className,
           stroke="currentColor"
           strokeWidth="1.8"
           strokeLinecap="round"
-          className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-ink-soft"
+          className="pointer-events-none absolute top-1/2 end-3.5 -translate-y-1/2 text-ink-soft"
         >
           <path d="m6 9.5 6 6 6-6" />
         </svg>

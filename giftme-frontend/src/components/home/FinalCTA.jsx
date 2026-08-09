@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
@@ -13,6 +14,7 @@ import './FinalCTA.css'
  * grain, the same two devices the hero uses.
  */
 function FinalCTA() {
+  const { t } = useTranslation()
   return (
     <section className="final-cta" aria-labelledby="final-cta-title">
       <Container>
@@ -20,20 +22,17 @@ function FinalCTA() {
           <span aria-hidden="true" className="grain" />
 
           <div className="final-cta__content">
-            <p className="eyebrow eyebrow--centered">Ready when you are</p>
+            <p className="eyebrow eyebrow--centered">{t('home.finalCta.eyebrow')}</p>
 
             <h2 id="final-cta-title" className="final-cta__title">
-              Give them something they&rsquo;ll <em>remember.</em>
+              {t('home.finalCta.titleLine1')} <em>{t('home.finalCta.titleEm')}</em>
             </h2>
 
-            <p className="final-cta__lead">
-              Personalized gifts made for the moments that matter. Ten minutes
-              now, a memory they keep for years.
-            </p>
+            <p className="final-cta__lead">{t('home.finalCta.lead')}</p>
 
             <div className="final-cta__actions">
               <Button to={paths.shop} size="lg" trailingIcon="arrowRight">
-                Create Your Gift
+                {t('home.finalCta.cta')}
               </Button>
 
               <Link
@@ -41,16 +40,16 @@ function FinalCTA() {
                 className="final-cta__link group"
               >
                 <span className="relative">
-                  <span>Browse all gifts</span>
+                  <span>{t('home.finalCta.browseAll')}</span>
                   <span
                     aria-hidden="true"
-                    className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100"
+                    className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100 rtl:right-0 rtl:left-auto rtl:origin-right"
                   />
                 </span>
                 <Icon
                   name="arrowRight"
                   size={16}
-                  className="transition-transform duration-200 ease-brand group-hover:translate-x-1"
+                  className="transition-transform duration-200 ease-brand group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
                 />
               </Link>
             </div>

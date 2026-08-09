@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import Button from '../../components/common/Button.jsx'
 import Container from '../../components/common/Container.jsx'
@@ -53,6 +54,7 @@ const GRID_CLASS =
   'grid items-start max-nav:gap-10 nav:gap-14 nav:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]'
 
 function ProductPage() {
+  const { t } = useTranslation()
   const { slug } = useParams()
   const { data: product, error, loading, run } = useAsync(() => getProductBySlug(slug), [slug])
   const { addItem } = useCart()
@@ -84,7 +86,7 @@ function ProductPage() {
       <Container>
         <div className="max-nav:py-10 nav:py-14">
           <p role="status" className="sr-only">
-            Loading this gift…
+            {t('common.loading')}
           </p>
           <ProductPageSkeleton />
         </div>
@@ -100,9 +102,9 @@ function ProductPage() {
         <div className="max-nav:py-14 nav:py-20">
           <EmptyState
             icon="search"
-            title="We couldn't find that gift"
-            description={`Nothing in the catalog matches “${slug}”. It may have been renamed or taken down.`}
-            actionLabel="Browse every gift"
+            title={t('product.notFoundTitle')}
+            description={t('product.notFoundDescription', { slug })}
+            actionLabel={t('product.browseAll')}
             actionTo={paths.shop}
           />
         </div>
@@ -114,7 +116,7 @@ function ProductPage() {
     return (
       <Container>
         <div className="max-nav:py-14 nav:py-20">
-          <ErrorState error={error} onRetry={run} title="We couldn't load this gift" />
+          <ErrorState error={error} onRetry={run} title={t('product.loadErrorTitle')} />
         </div>
       </Container>
     )
@@ -159,15 +161,15 @@ function ProductPage() {
           className="flex flex-wrap items-center gap-x-2 gap-y-1 text-ink-soft max-nav:pt-5 nav:pt-8 [font-size:var(--text-xs)]"
         >
           <Link to={paths.home} className="transition-colors duration-200 hover:text-ink">
-            Home
+            {t('product.home')}
           </Link>
-          <Icon name="chevronRight" size={13} />
+          <Icon name="chevronRight" size={13} className="rtl:rotate-180" />
           <Link to={paths.shop} className="transition-colors duration-200 hover:text-ink">
-            Gifts
+            {t('product.gifts')}
           </Link>
           {product.category ? (
             <>
-              <Icon name="chevronRight" size={13} />
+              <Icon name="chevronRight" size={13} className="rtl:rotate-180" />
               <Link
                 to={paths.category(product.category)}
                 className="transition-colors duration-200 hover:text-ink"
@@ -176,7 +178,7 @@ function ProductPage() {
               </Link>
             </>
           ) : null}
-          <Icon name="chevronRight" size={13} />
+          <Icon name="chevronRight" size={13} className="rtl:rotate-180" />
           <span aria-current="page" className="text-ink">
             {product.name}
           </span>
@@ -200,16 +202,16 @@ function ProductPage() {
 
             <div className="mt-4 flex flex-wrap items-center gap-2.5">
               {withdrawn ? (
-                <Badge tone="ink">No longer available</Badge>
+                <Badge tone="ink">{t('product.noLongerAvailable')}</Badge>
               ) : soldOut ? (
-                <Badge tone="ink">Sold out</Badge>
+                <Badge tone="ink">{t('product.soldOut')}</Badge>
               ) : lowStock ? (
-                <Badge tone="clay">Only {stock} left</Badge>
+                <Badge tone="clay">{t('product.onlyLeft', { count: stock })}</Badge>
               ) : (
-                <Badge tone="olive">In stock</Badge>
+                <Badge tone="olive">{t('product.inStock')}</Badge>
               )}
 
-              {product.customizationEnabled ? <Badge tone="neutral">Personalized</Badge> : null}
+              {product.customizationEnabled ? <Badge tone="neutral">{t('product.personalized')}</Badge> : null}
             </div>
 
             {product.shortDescription ? (
@@ -224,11 +226,10 @@ function ProductPage() {
                 className="mt-9 border-t border-line pt-9"
               >
                 <h2 id="personalize-heading" className="[font-size:var(--text-display-3)]">
-                  Personalize it
+                  {t('product.personalizeIt')}
                 </h2>
                 <p className="mt-2.5 mb-7 max-w-[52ch] text-ink-soft [font-size:var(--text-sm)]">
-                  Everything below travels with this item — leave anything blank and we simply
-                  won&rsquo;t print it.
+                  {t('product.personalizeHint')}
                 </p>
 
                 <PersonalizationPanel
@@ -247,7 +248,7 @@ function ProductPage() {
                   min={1}
                   max={Math.max(1, stock)}
                   disabled={!canOrder}
-                  label={`Quantity of ${product.name}`}
+                  label={t('product.quantityOf', { name: product.name })}
                 />
 
                 <Button
@@ -257,7 +258,7 @@ function ProductPage() {
                   disabled={!canOrder}
                   className="grow"
                 >
-                  {withdrawn ? 'Unavailable' : soldOut ? 'Sold out' : 'Add to cart'}
+                  {withdrawn ? t('product.unavailable') : soldOut ? t('product.soldOut') : t('product.addToCart')}
                 </Button>
               </div>
 
@@ -268,10 +269,9 @@ function ProductPage() {
                 </p>
               ) : withdrawn ? (
                 <p className="mt-3 text-ink-soft [font-size:var(--text-sm)]">
-                  This gift has been withdrawn from the catalog, so we can&rsquo;t take orders for
-                  it —{' '}
+                  {t('product.withdrawnNotice')}{' '}
                   <Link to={paths.shop} className="text-burgundy underline underline-offset-4">
-                    see what else is available
+                    {t('product.seeWhatElse')}
                   </Link>
                   .
                 </p>
@@ -279,9 +279,9 @@ function ProductPage() {
                 /* MISSING API: there is no back-in-stock / notify-me endpoint, so
                    we promise nothing we cannot deliver and point at the catalog. */
                 <p className="mt-3 text-ink-soft [font-size:var(--text-sm)]">
-                  This one is out of stock. We can&rsquo;t take orders for it right now —{' '}
+                  {t('product.soldOutNotice')}{' '}
                   <Link to={paths.shop} className="text-burgundy underline underline-offset-4">
-                    see what else is available
+                    {t('product.seeWhatElse')}
                   </Link>
                   .
                 </p>
@@ -292,26 +292,28 @@ function ProductPage() {
                   <div className="mt-5 rounded-(--radius-md) border border-line-strong bg-white px-5 py-4">
                     <p className="flex items-center gap-2 font-medium">
                       <Icon name="check" size={16} className="text-olive-deep" />
-                      Added to your cart
+                      {t('product.addedToCart')}
                     </p>
                     <p className="mt-1.5 text-ink-soft [font-size:var(--text-sm)]">
-                      {added.quantity} × {product.name}
-                      {added.qrMemoryEnabled ? ', with a QR Memory' : ''}.
+                      {t('product.addedSummary', {
+                        quantity: added.quantity,
+                        name: product.name,
+                        withMemory: added.qrMemoryEnabled ? t('product.withMemory') : '',
+                      })}
                     </p>
 
                     {added.qrMemoryEnabled ? (
                       <p className="mt-2 text-ink-soft [font-size:var(--text-sm)]">
-                        The memory page is created when you place the order — its link comes back
-                        with your order confirmation.
+                        {t('product.memoryNote')}
                       </p>
                     ) : null}
 
                     <div className="mt-4 flex flex-wrap gap-3">
                       <Button variant="primary" size="sm" to={paths.cart}>
-                        View cart
+                        {t('product.viewCart')}
                       </Button>
                       <Button variant="quiet" size="sm" to={paths.shop}>
-                        Keep shopping
+                        {t('product.keepShopping')}
                       </Button>
                     </div>
                   </div>
@@ -324,20 +326,23 @@ function ProductPage() {
                 <Icon name="truck" size={18} className="mt-0.5 shrink-0 text-ink-soft" />
                 <span>
                   {toFreeDelivery > 0
-                    ? `Estimated delivery ${formatPriceShort(DELIVERY_FEE)} — free over ${formatPriceShort(FREE_DELIVERY_THRESHOLD)}.`
-                    : 'Free delivery at this total (estimated).'}
+                    ? t('product.deliveryEstimate', {
+                        fee: formatPriceShort(DELIVERY_FEE),
+                        threshold: formatPriceShort(FREE_DELIVERY_THRESHOLD),
+                      })
+                    : t('product.deliveryFree')}
                 </span>
               </li>
               <li className="flex gap-3">
                 <Icon name="cash" size={18} className="mt-0.5 shrink-0 text-ink-soft" />
-                <span>Cash on delivery — you pay the courier when the gift arrives.</span>
+                <span>{t('product.cod')}</span>
               </li>
               <li className="flex gap-3">
                 <Icon name="box" size={18} className="mt-0.5 shrink-0 text-ink-soft" />
                 <span>
-                  Every order comes with a tracking code you can follow on the{' '}
+                  {t('product.trackingLine')}{' '}
                   <Link to={paths.track} className="text-burgundy underline underline-offset-4">
-                    tracking page
+                    {t('product.trackingPage')}
                   </Link>
                   .
                 </span>
@@ -348,14 +353,13 @@ function ProductPage() {
                 config values (see lib/delivery.js); only POST /api/orders returns
                 the fee the customer is actually charged. */}
             <p className="mt-4 text-ink-soft [font-size:var(--text-xs)]">
-              Delivery figures are estimates for this item. The final fee is calculated from your
-              whole cart when you place the order.
+              {t('product.deliveryFootnote')}
             </p>
 
             {paragraphs.length > 0 ? (
               <section aria-labelledby="about-heading" className="mt-9 border-t border-line pt-9">
                 <h2 id="about-heading" className="[font-size:var(--text-display-3)]">
-                  About this gift
+                  {t('product.aboutThisGift')}
                 </h2>
                 <div className="mt-4 flex flex-col gap-4 text-ink-soft [font-size:var(--text-sm)]">
                   {paragraphs.map((paragraph, index) => (

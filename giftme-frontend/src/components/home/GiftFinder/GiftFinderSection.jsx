@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Container from '../../common/Container.jsx'
 import Button from '../../common/Button.jsx'
 import Reveal from '../../common/Reveal.jsx'
@@ -62,6 +63,7 @@ function Rule({ className = '' }) {
 }
 
 function GiftFinderSection() {
+  const { t, i18n } = useTranslation()
   const [answers, setAnswers] = useState(NO_ANSWERS)
   const [stepIndex, setStepIndex] = useState(0)
   const [result, setResult] = useState(null)
@@ -89,7 +91,13 @@ function GiftFinderSection() {
   } = useAsync(() => listProducts({ size: 100 }), [])
 
   const products = useMemo(() => catalog?.content ?? [], [catalog])
-  const steps = useMemo(() => buildGiftFinderSteps(products), [products])
+  // i18n.language is a real dependency, not decoration: buildGiftFinderSteps
+  // reads the current language off the i18next singleton (see data/giftFinder.js)
+  // rather than a value visible in this callback body, so the linter can't see
+  // the connection - without it a language switch would leave this memo
+  // serving stale text.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- i18n.language drives buildGiftFinderSteps indirectly, see comment above
+  const steps = useMemo(() => buildGiftFinderSteps(products), [products, i18n.language])
 
   const step = steps[stepIndex]
   const chosen = step ? answers[step.id] : ''
@@ -135,11 +143,7 @@ function GiftFinderSection() {
 
   const handleNext = () => {
     if (!chosen) {
-      setHint(
-        isLastStep
-          ? 'Pick a budget to see your match.'
-          : 'Pick one to continue.',
-      )
+      setHint(isLastStep ? t('home.giftFinder.pickBudget') : t('home.giftFinder.pickOne'))
       return
     }
 
@@ -200,7 +204,7 @@ function GiftFinderSection() {
     if (catalogLoading) {
       return (
         <div className="flex min-h-[11rem] items-center justify-center text-ink-soft">
-          <Spinner size={24} label="Loading gifts" />
+          <Spinner size={24} label={t('common.loading')} />
         </div>
       )
     }
@@ -211,7 +215,7 @@ function GiftFinderSection() {
           compact
           error={catalogError}
           onRetry={reloadCatalog}
-          title="We couldn't load the gifts"
+          title={t('home.giftFinder.errorTitle')}
         />
       )
     }
@@ -219,8 +223,7 @@ function GiftFinderSection() {
     if (products.length === 0) {
       return (
         <p className="py-8 text-center text-ink-soft [font-size:var(--text-sm)]">
-          There are no gifts in the shop right now, so there is nothing to
-          recommend just yet.
+          {t('home.giftFinder.emptyCatalog')}
         </p>
       )
     }
@@ -291,24 +294,24 @@ function GiftFinderSection() {
         <div className="grid max-nav:gap-10 nav:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] nav:items-center nav:max-wide:gap-12 wide:gap-16">
           <Reveal>
             <div className="max-w-[34rem]">
-              <p className="eyebrow">The gift finder</p>
+              <p className="eyebrow">{t('home.giftFinder.eyebrow')}</p>
 
               <h2
                 id="gift-finder-title"
                 className="mt-5 [font-size:var(--text-display-2)]"
               >
-                Not sure <em className="text-burgundy italic">what to gift?</em>
+                {t('home.giftFinder.titleLine1')}{' '}
+                <em className="text-burgundy italic">{t('home.giftFinder.titleEm')}</em>
               </h2>
 
               <p className="mt-5 max-w-[42ch] text-ink-soft [font-size:var(--text-lg)]">
-                Tell us a little about them. We&rsquo;ll help you find something
-                they&rsquo;ll love.
+                {t('home.giftFinder.description')}
               </p>
 
               <Rule className="mt-8 max-w-[22rem]" />
 
               <p className="mt-5 text-[0.6875rem] font-medium tracking-[0.14em] text-ink-soft uppercase">
-                Three questions · no account, no email
+                {t('home.giftFinder.noAccount')}
               </p>
             </div>
           </Reveal>
@@ -349,7 +352,7 @@ function GiftFinderSection() {
                           <button
                             type="button"
                             onClick={() => goToStep(index)}
-                            className="group mt-2.5 block w-full min-w-0 text-left"
+                            className="group mt-2.5 block w-full min-w-0 text-start"
                           >
                             <span className="block text-[0.68rem] tracking-[0.14em] text-olive-deep uppercase">
                               {entry.index}
@@ -358,7 +361,7 @@ function GiftFinderSection() {
                               {answer.label}
                             </span>
                             <span className="sr-only">
-                              — change your {entry.name.toLowerCase()}
+                              {t('home.giftFinder.changeAnswer', { name: entry.name.toLowerCase() })}
                             </span>
                           </button>
                         ) : (
@@ -396,7 +399,7 @@ function GiftFinderSection() {
                 >
                   {result ? (
                     <Button variant="ghost" onClick={handleStartOver}>
-                      Start over
+                      {t('home.giftFinder.startOver')}
                     </Button>
                   ) : (
                     <>
@@ -405,7 +408,7 @@ function GiftFinderSection() {
                           variant="ghost"
                           onClick={() => goToStep(stepIndex - 1)}
                         >
-                          Back
+                          {t('home.giftFinder.back')}
                         </Button>
                       ) : null}
 
@@ -417,9 +420,9 @@ function GiftFinderSection() {
                         trailingIcon="arrowRight"
                         onClick={handleNext}
                         aria-disabled={chosen ? undefined : 'true'}
-                        className="ml-auto w-full sm:w-auto"
+                        className="ms-auto w-full sm:w-auto"
                       >
-                        {isLastStep ? 'Find My Gift' : 'Continue'}
+                        {isLastStep ? t('home.giftFinder.findMyGift') : t('home.giftFinder.continue')}
                       </Button>
                     </>
                   )}

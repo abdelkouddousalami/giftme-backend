@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
@@ -6,6 +7,19 @@ import { images, memoryGallery } from '../../assets/images'
 import { memoryLayers, scanFlow } from '../../data/home.js'
 import { paths, sectionIds } from '../../app/paths.js'
 import './QRMemorySection.css'
+
+const FLOW_KEYS = {
+  scan: { title: 'home.qrMemory.flow.scanTitle', description: 'home.qrMemory.flow.scanDescription' },
+  open: { title: 'home.qrMemory.flow.openTitle', description: 'home.qrMemory.flow.openDescription' },
+  relive: { title: 'home.qrMemory.flow.reliveTitle', description: 'home.qrMemory.flow.reliveDescription' },
+}
+
+const LAYER_LABEL_KEYS = {
+  photos: 'home.qrMemory.layers.photos',
+  video: 'home.qrMemory.layers.video',
+  audio: 'home.qrMemory.layers.audio',
+  message: 'home.qrMemory.layers.message',
+}
 
 /**
  * The one thing GiftMe sells that a print shop cannot.
@@ -23,6 +37,7 @@ import './QRMemorySection.css'
 const WAVEFORM = [32, 64, 44, 82, 54, 96, 40, 72, 34, 88, 48, 62, 30, 76, 50]
 
 function QRMemorySection() {
+  const { t } = useTranslation()
   return (
     <section
       className="qr-memory"
@@ -34,18 +49,14 @@ function QRMemorySection() {
 
       <Container className="qr-memory__inner">
         <Reveal className="qr-memory__content">
-          <p className="eyebrow eyebrow--inverse">The QR memory</p>
+          <p className="eyebrow eyebrow--inverse">{t('home.qrMemory.eyebrow')}</p>
 
           <h2 id="qr-memory-title" className="qr-memory__title">
-            <span>More than a gift.</span>
-            <em>A memory they can revisit.</em>
+            <span>{t('home.qrMemory.titleLine1')}</span>
+            <em>{t('home.qrMemory.titleLine2')}</em>
           </h2>
 
-          <p className="qr-memory__lead">
-            Every piece can carry a small kraft tag. Behind it is a private page
-            — the photos, the voice note, the video and the words that never fit
-            on a card.
-          </p>
+          <p className="qr-memory__lead">{t('home.qrMemory.lead')}</p>
 
           <ol className="qr-memory__flow">
             {scanFlow.map((step, index) => (
@@ -54,9 +65,9 @@ function QRMemorySection() {
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <span>
-                  <span className="qr-memory__flow-title">{step.title}</span>
+                  <span className="qr-memory__flow-title">{t(FLOW_KEYS[step.id].title)}</span>
                   <span className="qr-memory__flow-text">
-                    {step.description}
+                    {t(FLOW_KEYS[step.id].description)}
                   </span>
                 </span>
               </li>
@@ -67,7 +78,7 @@ function QRMemorySection() {
             {memoryLayers.map((layer) => (
               <li key={layer.id} className="qr-memory__layer">
                 <Icon name={layer.icon} size={15} strokeWidth={1.5} />
-                {layer.label}
+                {t(LAYER_LABEL_KEYS[layer.id])}
               </li>
             ))}
           </ul>
@@ -79,12 +90,12 @@ function QRMemorySection() {
               size="lg"
               trailingIcon="arrowRight"
             >
-              Discover QR Memory
+              {t('home.qrMemory.cta')}
             </Button>
 
             <p className="qr-memory__privacy">
               <Icon name="lock" size={15} strokeWidth={1.4} />
-              Private by default — reachable only from their link
+              {t('home.qrMemory.privacy')}
             </p>
           </div>
         </Reveal>
@@ -109,7 +120,7 @@ function QRMemorySection() {
                 height="200"
                 loading="lazy"
               />
-              <span>Scan the tag on the gift</span>
+              <span>{t('home.qrMemory.scanTag')}</span>
             </p>
           </div>
 
@@ -121,7 +132,7 @@ function QRMemorySection() {
             <div className="qr-memory__screen">
               <div className="qr-memory__screen-head">
                 <span className="qr-memory__screen-brand">GiftMe</span>
-                <span className="qr-memory__screen-lock">Private</span>
+                <span className="qr-memory__screen-lock">{t('home.qrMemory.private')}</span>
               </div>
 
               <img
@@ -133,15 +144,13 @@ function QRMemorySection() {
                 loading="lazy"
               />
 
-              <p className="qr-memory__screen-note">
-                Two years, and I&rsquo;d still choose that evening again.
-              </p>
+              <p className="qr-memory__screen-note">{t('home.qrMemory.screenNote')}</p>
 
               <div className="qr-memory__screen-row">
                 <span className="qr-memory__screen-play">
                   <Icon name="play" size={12} />
                 </span>
-                <span className="qr-memory__screen-label">Our evening</span>
+                <span className="qr-memory__screen-label">{t('home.qrMemory.screenVideoLabel')}</span>
                 <span className="qr-memory__screen-time">0:42</span>
               </div>
 

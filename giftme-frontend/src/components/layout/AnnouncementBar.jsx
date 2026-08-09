@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import { homeAnchor, sectionIds } from '../../app/paths.js'
 
@@ -28,6 +29,7 @@ function Mark({ className = '' }) {
 }
 
 function AnnouncementBar() {
+  const { t } = useTranslation()
   return (
     <aside
       aria-label="GiftMe announcement"
@@ -35,7 +37,7 @@ function AnnouncementBar() {
     >
       <Container className="flex min-h-[2.5rem] items-center justify-center py-2">
         <p className="flex items-center justify-center gap-x-3 text-center text-[0.625rem] leading-[1.6] tracking-[0.18em] uppercase sm:gap-x-4 sm:text-[0.6875rem] sm:tracking-[0.2em]">
-          <span>Personalized gifts</span>
+          <span>{t('announcement.personalized')}</span>
 
           <Mark />
 
@@ -43,12 +45,12 @@ function AnnouncementBar() {
             to={homeAnchor(sectionIds.qrMemory)}
             className="underline-offset-[0.45em] transition-opacity duration-200 hover:underline hover:opacity-80"
           >
-            Private QR memories
+            {t('announcement.qrLink')}
           </Link>
 
           <Mark className="max-sm:hidden" />
 
-          <span className="max-sm:hidden">Delivered in 3–5 days</span>
+          <span className="max-sm:hidden">{t('announcement.delivery')}</span>
         </p>
       </Container>
     </aside>

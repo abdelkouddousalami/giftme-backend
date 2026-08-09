@@ -35,7 +35,7 @@
 /* --- On the ink bands ---------------------------------------------------- */
 
 .section-heading--inverse .section-heading__title {
-  color: var(--color-text-inverse);
+  color: var(--color-on-ink-band);
 }
 
 /* Burgundy vanishes against near-black; clay is the accent that survives it. */
@@ -44,5 +44,5 @@
 }
 
 .section-heading--inverse .section-heading__description {
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }

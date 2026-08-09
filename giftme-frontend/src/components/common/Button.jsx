@@ -28,7 +28,10 @@ function Button({
     <>
       <span className="btn__label">{children}</span>
       {trailingIcon ? (
-        <Icon name={trailingIcon} size={18} className="btn__icon" />
+        // Every call site uses this for a "forward" affordance (arrowRight) -
+        // in RTL, forward points the other way, so the icon mirrors with the
+        // reading direction rather than staying pinned to the right.
+        <Icon name={trailingIcon} size={18} className="btn__icon rtl:-scale-x-100" />
       ) : null}
     </>
   )

@@ -48,6 +48,12 @@
   transform: translateX(3px);
 }
 
+/* Mirrors the hover nudge with the already-mirrored icon (see Button.jsx) -
+   without this the icon would still visually step towards the LTR "forward". */
+.btn:hover .btn__icon:dir(rtl) {
+  transform: translateX(-3px);
+}
+
 /* --- Sizes --------------------------------------------------------------- */
 
 .btn--sm {
@@ -115,13 +121,20 @@
   background-color: var(--color-surface);
 }
 
+/* Both variants exist to sit on the fixed-dark ink bands (QR memory,
+   OrderConfirmed's tracking panel) — they read off --color-ink-band /
+   --color-on-ink-band rather than --color-text / --color-text-inverse so
+   they stay a pale button on a dark panel in both themes, the same reason
+   Footer and QRMemorySection.css do. See the ink-band comment in tokens.css. */
 .btn--light {
-  background-color: var(--color-text-inverse);
-  color: var(--color-text);
+  background-color: var(--color-on-ink-band);
+  color: var(--color-ink-band);
 }
 
 .btn--light:hover {
-  background-color: var(--color-white);
+  /* Not --color-white: it flips to a dark card tone in dark mode, which would
+     make a "light" button turn dark on hover while sitting on a fixed-dark
+     band. The lift comes from the shadow/transform instead. */
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -129,13 +142,13 @@
 .btn--outline-light {
   background-color: transparent;
   border-color: var(--color-border-inverse-strong);
-  color: var(--color-text-inverse);
+  color: var(--color-on-ink-band);
 }
 
 .btn--outline-light:hover {
-  background-color: var(--color-text-inverse);
-  border-color: var(--color-text-inverse);
-  color: var(--color-text);
+  background-color: var(--color-on-ink-band);
+  border-color: var(--color-on-ink-band);
+  color: var(--color-ink-band);
 }
 
 .btn--ghost {

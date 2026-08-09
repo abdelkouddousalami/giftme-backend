@@ -1,3 +1,5 @@
+import i18n from '../i18n/index.js'
+
 /**
  * Gift Finder content + matching rules.
  *
@@ -12,6 +14,13 @@
  * something else entirely. The budget bands are now derived from the live
  * catalog's actual price range instead of being written down here.
  *
+ * Every label/note/question below reads through the i18next singleton
+ * directly rather than the `useTranslation` hook — this module is plain data,
+ * not a component, but still needs to answer in whatever language is active
+ * *right now* each time these functions run. Callers that memoize the result
+ * (GiftFinderSection does) must list `i18n.language` as a dependency, or a
+ * language switch won't invalidate the memo.
+ *
  * MISSING API: a real recommendation service would replace `recommendGift`
  * wholesale; only that function and `buildBudgetOptions` would have to change.
  */
@@ -21,32 +30,36 @@ const PUZZLE = 'personalized-puzzle'
 const MUG = 'personalized-mug'
 const QR_MEMORY = 'qr-memory-experience'
 
-export const recipientStep = {
-  id: 'recipient',
-  index: '01',
-  /** Short label for the progress rail — the question is too long to fit. */
-  name: 'Recipient',
-  question: 'Who are you gifting?',
-  options: [
-    { value: 'partner', label: 'Partner', icon: 'heart' },
-    { value: 'friend', label: 'Friend', icon: 'users' },
-    { value: 'mom', label: 'Mom', icon: 'home' },
-    { value: 'dad', label: 'Dad', icon: 'person' },
-    { value: 'family', label: 'Family', icon: 'family' },
-  ],
+export function recipientStep() {
+  return {
+    id: 'recipient',
+    index: '01',
+    /** Short label for the progress rail — the question is too long to fit. */
+    name: i18n.t('home.giftFinder.recipient.name'),
+    question: i18n.t('home.giftFinder.recipient.question'),
+    options: [
+      { value: 'partner', label: i18n.t('home.giftFinder.recipient.partner'), icon: 'heart' },
+      { value: 'friend', label: i18n.t('home.giftFinder.recipient.friend'), icon: 'users' },
+      { value: 'mom', label: i18n.t('home.giftFinder.recipient.mom'), icon: 'home' },
+      { value: 'dad', label: i18n.t('home.giftFinder.recipient.dad'), icon: 'person' },
+      { value: 'family', label: i18n.t('home.giftFinder.recipient.family'), icon: 'family' },
+    ],
+  }
 }
 
-export const occasionStep = {
-  id: 'occasion',
-  index: '02',
-  name: 'Occasion',
-  question: 'What are you celebrating?',
-  options: [
-    { value: 'birthday', label: 'Birthday', icon: 'cake' },
-    { value: 'anniversary', label: 'Anniversary', icon: 'rings' },
-    { value: 'thank-you', label: 'Thank You', icon: 'envelope' },
-    { value: 'just-because', label: 'Just Because', icon: 'sparkle' },
-  ],
+export function occasionStep() {
+  return {
+    id: 'occasion',
+    index: '02',
+    name: i18n.t('home.giftFinder.occasion.name'),
+    question: i18n.t('home.giftFinder.occasion.question'),
+    options: [
+      { value: 'birthday', label: i18n.t('home.giftFinder.occasion.birthday'), icon: 'cake' },
+      { value: 'anniversary', label: i18n.t('home.giftFinder.occasion.anniversary'), icon: 'rings' },
+      { value: 'thank-you', label: i18n.t('home.giftFinder.occasion.thankYou'), icon: 'envelope' },
+      { value: 'just-because', label: i18n.t('home.giftFinder.occasion.justBecause'), icon: 'sparkle' },
+    ],
+  }
 }
 
 /**
@@ -73,7 +86,7 @@ export function buildBudgetOptions(products) {
       {
         value: 'any',
         label: `${prices[0]} MAD`,
-        note: 'Everything we make',
+        note: i18n.t('home.giftFinder.budget.everything'),
         min: 0,
         max: Infinity,
       },
@@ -87,18 +100,24 @@ export function buildBudgetOptions(products) {
   const midCut = Math.round(min + third * 2)
 
   return [
-    { value: 'low', label: `Up to ${lowCut} MAD`, note: 'Small and personal', min: 0, max: lowCut },
+    {
+      value: 'low',
+      label: i18n.t('home.giftFinder.budget.upTo', { amount: lowCut }),
+      note: i18n.t('home.giftFinder.budget.small'),
+      min: 0,
+      max: lowCut,
+    },
     {
       value: 'mid',
-      label: `${lowCut}–${midCut} MAD`,
-      note: 'Our most-loved range',
+      label: i18n.t('home.giftFinder.budget.range', { min: lowCut, max: midCut }),
+      note: i18n.t('home.giftFinder.budget.loved'),
       min: lowCut,
       max: midCut,
     },
     {
       value: 'high',
-      label: `${midCut} MAD and up`,
-      note: 'The full experience',
+      label: i18n.t('home.giftFinder.budget.andUp', { amount: midCut }),
+      note: i18n.t('home.giftFinder.budget.full'),
       min: midCut,
       max: Infinity,
     },
@@ -108,13 +127,13 @@ export function buildBudgetOptions(products) {
 /** The three steps, with the budget options derived from the live catalog. */
 export function buildGiftFinderSteps(products) {
   return [
-    recipientStep,
-    occasionStep,
+    recipientStep(),
+    occasionStep(),
     {
       id: 'budget',
       index: '03',
-      name: 'Budget',
-      question: "What's your budget?",
+      name: i18n.t('home.giftFinder.budget.name'),
+      question: i18n.t('home.giftFinder.budget.question'),
       /* No icons here on purpose: the last step should feel lighter than the two
          that precede it, so it reads as a final detail rather than a third quiz. */
       options: buildBudgetOptions(products),
@@ -145,11 +164,12 @@ const OCCASION_MATCH = {
   'just-because': QR_MEMORY,
 }
 
-const REASONS = {
-  [MUG]: 'Small, personal and used every single day — the kind of gift that keeps showing up.',
-  [PUZZLE]: 'A moment they can hold, piece together, and keep long after the day is over.',
-  [QR_MEMORY]:
-    'Photos, a voice note and a video behind one scan — the whole story, not just one frame.',
+function reasonsBySlug() {
+  return {
+    [MUG]: i18n.t('home.giftFinder.reasons.mug'),
+    [PUZZLE]: i18n.t('home.giftFinder.reasons.puzzle'),
+    [QR_MEMORY]: i18n.t('home.giftFinder.reasons.qrMemory'),
+  }
 }
 
 /**
@@ -157,19 +177,15 @@ const REASONS = {
  * used when the budget hasn't moved the answer somewhere else — a line about a
  * puzzle would read as a mistake above a photo of a mug.
  */
-const PAIR_REASONS = {
-  'partner:anniversary':
-    'The photo you both keep coming back to, cut into something you can put together side by side.',
-  'partner:just-because':
-    'No occasion, no card — just the memory itself, waiting behind a scan.',
-  'friend:birthday':
-    'A private joke they will read every morning. The kind of gift that gets used, not shelved.',
-  'mom:thank-you':
-    'Everything you never quite say out loud, gathered behind one code she can open any time.',
-  'dad:birthday':
-    'Nothing ceremonial. Something he will actually reach for at seven in the morning.',
-  'family:just-because':
-    'One scan and the whole family is back in the same afternoon — photos, voices and all.',
+function pairReasons() {
+  return {
+    'partner:anniversary': i18n.t('home.giftFinder.reasons.partnerAnniversary'),
+    'partner:just-because': i18n.t('home.giftFinder.reasons.partnerJustBecause'),
+    'friend:birthday': i18n.t('home.giftFinder.reasons.friendBirthday'),
+    'mom:thank-you': i18n.t('home.giftFinder.reasons.momThankYou'),
+    'dad:birthday': i18n.t('home.giftFinder.reasons.dadBirthday'),
+    'family:just-because': i18n.t('home.giftFinder.reasons.familyJustBecause'),
+  }
 }
 
 const inBand = (product, band) =>
@@ -210,8 +226,8 @@ export function recommendGift(answers, products) {
 
   const keptThePair = product.slug === PAIR_MATCH[pair]
   const reason =
-    (keptThePair ? PAIR_REASONS[pair] : null) ??
-    REASONS[product.slug] ??
+    (keptThePair ? pairReasons()[pair] : null) ??
+    reasonsBySlug()[product.slug] ??
     // An unknown product still gets a truthful line — its own backend copy.
     product.shortDescription ??
     product.description

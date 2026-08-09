@@ -178,7 +178,7 @@ button {
 }
 
 .eyebrow--inverse {
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 /* --- Grain ---------------------------------------------------------------

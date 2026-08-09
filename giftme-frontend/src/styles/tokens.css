@@ -69,6 +69,26 @@
 
   --color-focus: var(--color-primary);
 
+  /* --- Ink bands (theme-independent) --------------------------------------
+     Footer and the QR memory section are landmarks — a fixed dark band that
+     reads the same whether the rest of the page is light or dark, the way a
+     printed page keeps one black ink regardless of the paper stock. Anything
+     that sits ON one of those two bands (their own text, the light-variant
+     button, the inverse section heading) reads off this family instead of the
+     ordinary text/surface tokens, which are the ones that flip in dark mode
+     below.
+
+     These are deliberately LITERAL values, not `var(--color-charcoal)` etc. —
+     a custom property reference stays live through the cascade, so aliasing
+     them to charcoal/graphite/text-inverse would make them flip anyway the
+     moment dark mode redefines those three below, defeating the entire point
+     of this block. Values match the light theme's own ink/paper today, so
+     nothing about these two sections changes when dark mode ships. */
+  --color-ink-band: #1e1c1a;
+  --color-ink-band-soft: #34302b;
+  --color-on-ink-band: #f6f1e8;
+  --color-on-ink-band-muted: rgba(246, 241, 232, 0.66);
+
   /* --- Typography ---------------------------------------------------------
      Fraunces for display (an editorial old-style serif — warm and considered,
      where the previous Playfair read romantic), Inter for everything else. The
@@ -167,4 +187,88 @@
   :root {
     --header-height: 76px;
   }
+}
+
+/* ==========================================================================
+   Dark mode
+   --------------------------------------------------------------------------
+   Every colour utility in this app resolves through the semantic tokens
+   above, so redefining them here is enough to re-theme the whole storefront
+   without touching a single component. Two things are deliberately NOT
+   redefined:
+
+     - The ink-band family just above (Footer, the QR memory section, the
+       light-variant button, the inverse section heading) — those stay the
+       same fixed dark band in both themes; see the comment on that block.
+     - --color-border-inverse / --color-border-inverse-strong — already fixed
+       rgba(paper) values used only against that same fixed ink band, so they
+       need no dark-mode counterpart either.
+
+   Applied two ways, so both "follow the OS" and an explicit in-app toggle
+   work: `prefers-color-scheme` is the default when the visitor has not
+   chosen, guarded to step aside the instant `data-theme="light"` is set
+   in-app; `[data-theme="dark"]` is that explicit choice, and wins regardless
+   of the OS setting. ThemeContext is what sets/clears `data-theme` on
+   <html> and remembers the choice in localStorage. */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-ivory: #17140f;
+    --color-bone: #1e1a15;
+    --color-sand: #292420;
+    --color-white: #221e18;
+    --color-charcoal: #f2ece1;
+    --color-graphite: #4a423a;
+
+    --color-bg-veil: rgba(23, 20, 15, 0.82);
+    --color-bg-veil-strong: rgba(23, 20, 15, 0.94);
+
+    --color-primary-strong: #c98d90;
+    --color-primary-light: #4a2f30;
+    --color-primary-tint: rgba(216, 148, 152, 0.12);
+
+    --color-secondary-strong: #a9b493;
+    --color-secondary-light: #2a2e22;
+    --color-secondary-tint: rgba(140, 156, 112, 0.14);
+
+    --color-accent-strong: #d99b78;
+    --color-accent-tint: rgba(196, 138, 100, 0.16);
+
+    --color-text-inverse: #1e1c1a;
+    --color-text-inverse-muted: rgba(30, 28, 26, 0.66);
+
+    --color-border: #332e28;
+    --color-border-strong: #453e35;
+    --color-border-input: #837a6d;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-ivory: #17140f;
+  --color-bone: #1e1a15;
+  --color-sand: #292420;
+  --color-white: #221e18;
+  --color-charcoal: #f2ece1;
+  --color-graphite: #4a423a;
+
+  --color-bg-veil: rgba(23, 20, 15, 0.82);
+  --color-bg-veil-strong: rgba(23, 20, 15, 0.94);
+
+  --color-primary-strong: #c98d90;
+  --color-primary-light: #4a2f30;
+  --color-primary-tint: rgba(216, 148, 152, 0.12);
+
+  --color-secondary-strong: #a9b493;
+  --color-secondary-light: #2a2e22;
+  --color-secondary-tint: rgba(140, 156, 112, 0.14);
+
+  --color-accent-strong: #d99b78;
+  --color-accent-tint: rgba(196, 138, 100, 0.16);
+
+  --color-text-inverse: #1e1c1a;
+  --color-text-inverse-muted: rgba(30, 28, 26, 0.66);
+
+  --color-border: #332e28;
+  --color-border-strong: #453e35;
+  --color-border-input: #837a6d;
 }

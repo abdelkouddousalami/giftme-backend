@@ -1,9 +1,17 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
 import Icon from '../common/Icon.jsx'
 import { servicePromises } from '../../data/home.js'
 import { sectionIds } from '../../app/paths.js'
+
+const PROMISE_KEYS = {
+  'made-to-order': { title: 'home.socialProof.madeToOrderTitle', description: 'home.socialProof.madeToOrderDescription' },
+  cod: { title: 'home.socialProof.codTitle', description: 'home.socialProof.codDescription' },
+  tracked: { title: 'home.socialProof.trackedTitle', description: 'home.socialProof.trackedDescription' },
+  memory: { title: 'home.socialProof.memoryTitle', description: 'home.socialProof.memoryDescription' },
+}
 
 /**
  * What GiftMe actually guarantees — not what people supposedly said about it.
@@ -30,6 +38,7 @@ import { sectionIds } from '../../app/paths.js'
  * API — the layout below is deliberately close to what it was.
  */
 function SocialProof() {
+  const { t } = useTranslation()
   return (
     <section
       id={sectionIds.reviews}
@@ -41,13 +50,13 @@ function SocialProof() {
           <SectionHeading
             id="proof-title"
             align="center"
-            eyebrow="Trusted with the moment"
+            eyebrow={t('home.socialProof.eyebrow')}
             title={
               <>
-                Given, opened, <em>kept.</em>
+                {t('home.socialProof.titleLine1')} <em>{t('home.socialProof.titleEm')}</em>
               </>
             }
-            description="Every order leaves here made to order and packed by hand — and most of them arrive on a day someone had been planning for."
+            description={t('home.socialProof.description')}
           />
         </Reveal>
 
@@ -62,10 +71,10 @@ function SocialProof() {
                   <Icon name={promise.icon} size={19} />
                 </span>
 
-                <h3 className="mt-5 text-[1.0625rem] leading-snug">{promise.title}</h3>
+                <h3 className="mt-5 text-[1.0625rem] leading-snug">{t(PROMISE_KEYS[promise.id].title)}</h3>
 
                 <p className="mt-2.5 flex-1 text-ink-soft [font-size:var(--text-sm)]">
-                  {promise.description}
+                  {t(PROMISE_KEYS[promise.id].description)}
                 </p>
               </div>
             </Reveal>

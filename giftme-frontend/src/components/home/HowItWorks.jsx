@@ -1,9 +1,19 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
 import { steps } from '../../data/home.js'
 import { sectionIds } from '../../app/paths.js'
 import './HowItWorks.css'
+
+const STEP_KEYS = {
+  choose: { title: 'home.howItWorks.steps.chooseTitle', description: 'home.howItWorks.steps.chooseDescription' },
+  personalize: {
+    title: 'home.howItWorks.steps.personalizeTitle',
+    description: 'home.howItWorks.steps.personalizeDescription',
+  },
+  deliver: { title: 'home.howItWorks.steps.deliverTitle', description: 'home.howItWorks.steps.deliverDescription' },
+}
 
 /**
  * Three steps, set as a printed run-on rather than three cards: one hairline
@@ -12,6 +22,7 @@ import './HowItWorks.css'
  * quietest thing on the page.
  */
 function HowItWorks() {
+  const { t } = useTranslation()
   return (
     <section
       className="how"
@@ -23,13 +34,13 @@ function HowItWorks() {
           <SectionHeading
             id="how-title"
             align="center"
-            eyebrow="How GiftMe works"
+            eyebrow={t('home.howItWorks.eyebrow')}
             title={
               <>
-                From a moment to a <em>memory.</em>
+                {t('home.howItWorks.titleLine1')} <em>{t('home.howItWorks.titleEm')}</em>
               </>
             }
-            description="Three steps, about ten minutes, and the rest is ours to make."
+            description={t('home.howItWorks.description')}
           />
         </Reveal>
 
@@ -45,8 +56,8 @@ function HowItWorks() {
                 {step.number}
               </span>
 
-              <h3 className="how__step-title">{step.title}</h3>
-              <p className="how__step-text">{step.description}</p>
+              <h3 className="how__step-title">{t(STEP_KEYS[step.id].title)}</h3>
+              <p className="how__step-text">{t(STEP_KEYS[step.id].description)}</p>
             </Reveal>
           ))}
         </ol>

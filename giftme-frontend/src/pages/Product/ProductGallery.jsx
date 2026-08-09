@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { productGallery } from '../../lib/productMedia.js'
 
 /**
@@ -15,6 +16,7 @@ import { productGallery } from '../../lib/productMedia.js'
  * gets no strip at all — a one-item picker is noise.
  */
 function ProductGallery({ product }) {
+  const { t } = useTranslation()
   const images = useMemo(() => productGallery(product), [product])
   const [index, setIndex] = useState(0)
 
@@ -46,7 +48,7 @@ function ProductGallery({ product }) {
 
         {active.isFallback ? (
           <figcaption className="mt-3 text-ink-soft [font-size:var(--text-xs)]">
-            Styling photograph — no photo has been uploaded for this gift yet.
+            {t('product.gallery.fallbackCaption')}
           </figcaption>
         ) : null}
       </figure>
@@ -77,7 +79,7 @@ function ProductGallery({ product }) {
                     style={{ objectPosition: image.position }}
                   />
                   <span className="sr-only">
-                    Show image {position + 1} of {images.length}
+                    {t('product.gallery.showImage', { index: position + 1, total: images.length })}
                   </span>
                 </button>
               </li>

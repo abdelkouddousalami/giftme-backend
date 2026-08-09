@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
@@ -6,6 +7,13 @@ import SectionHeading from '../common/SectionHeading.jsx'
 import { images } from '../../assets/images'
 import { personalLayers } from '../../data/home.js'
 import { paths, sectionIds } from '../../app/paths.js'
+
+const LAYER_KEYS = {
+  names: { title: 'home.personalization.layers.namesTitle', description: 'home.personalization.layers.namesDescription' },
+  photo: { title: 'home.personalization.layers.photoTitle', description: 'home.personalization.layers.photoDescription' },
+  message: { title: 'home.personalization.layers.messageTitle', description: 'home.personalization.layers.messageDescription' },
+  memory: { title: 'home.personalization.layers.memoryTitle', description: 'home.personalization.layers.memoryDescription' },
+}
 
 /**
  * What "personalized" actually means, before the QR section claims it means
@@ -20,6 +28,7 @@ import { paths, sectionIds } from '../../app/paths.js'
  * italic and given a whole panel to itself.
  */
 function Personalization() {
+  const { t } = useTranslation()
   return (
     <section
       id={sectionIds.personalize}
@@ -31,13 +40,13 @@ function Personalization() {
           <Reveal>
             <SectionHeading
               id="personalize-title"
-              eyebrow="Personalization"
+              eyebrow={t('home.personalization.eyebrow')}
               title={
                 <>
-                  Make it <em>personal.</em>
+                  {t('home.personalization.titleLine1')} <em>{t('home.personalization.titleEm')}</em>
                 </>
               }
-              description="Everything on a GiftMe piece is something you chose. Four layers, added in about ten minutes, previewed before anything is printed."
+              description={t('home.personalization.description')}
             />
 
             <ol className="mt-10 border-t border-line">
@@ -58,11 +67,11 @@ function Personalization() {
                         strokeWidth={1.4}
                         className="shrink-0 text-olive-deep"
                       />
-                      {layer.title}
+                      {t(LAYER_KEYS[layer.id].title)}
                     </h3>
 
                     <p className="mt-1.5 max-w-[44ch] text-ink-soft [font-size:var(--text-sm)]">
-                      {layer.description}
+                      {t(LAYER_KEYS[layer.id].description)}
                     </p>
                   </div>
                 </li>
@@ -75,7 +84,7 @@ function Personalization() {
               className="mt-9"
               trailingIcon="arrowRight"
             >
-              Start personalizing
+              {t('home.personalization.cta')}
             </Button>
           </Reveal>
 
@@ -102,14 +111,12 @@ function Personalization() {
               <div className="flex min-w-0 flex-col max-sm:gap-4 sm:col-span-4 sm:gap-5">
                 <figure className="m-0 rounded-(--radius-md) border border-line bg-bone p-5">
                   <figcaption className="text-[0.5625rem] font-medium tracking-[0.16em] text-ink-soft uppercase">
-                    Your message
+                    {t('home.personalization.yourMessage')}
                   </figcaption>
                   {/* No preflight: <blockquote> keeps its 40px UA indent
                       unless the inline margins are reset here. */}
                   <blockquote className="font-display mx-0 mt-3 mb-0 text-[1rem] leading-[1.55] text-ink italic">
-                    <p>
-                      Two years, and I&rsquo;d still choose that evening again.
-                    </p>
+                    <p>{t('home.personalization.quote')}</p>
                   </blockquote>
                   <span
                     aria-hidden="true"

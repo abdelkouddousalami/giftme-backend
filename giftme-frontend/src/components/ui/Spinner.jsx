@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 /**
  * The single busy indicator.
  *
@@ -6,7 +8,9 @@
  * visually-hidden label means a screen reader announces the wait; sighted users
  * get the arc.
  */
-function Spinner({ size = 20, label = 'Loading', className = '' }) {
+function Spinner({ size = 20, label, className = '' }) {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t('common.loading')
   return (
     <span role="status" className={`inline-flex items-center gap-3 ${className}`}>
       <svg
@@ -25,19 +29,21 @@ function Spinner({ size = 20, label = 'Loading', className = '' }) {
           strokeLinecap="round"
         />
       </svg>
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{resolvedLabel}</span>
     </span>
   )
 }
 
 /** Full-section busy state — keeps the page from collapsing while data loads. */
-export function LoadingBlock({ label = 'Loading', className = '' }) {
+export function LoadingBlock({ label, className = '' }) {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t('common.loading')
   return (
     <div
       className={`flex min-h-[16rem] flex-col items-center justify-center gap-4 text-ink-soft ${className}`}
     >
-      <Spinner size={26} label={label} />
-      <p className="[font-size:var(--text-sm)]">{label}…</p>
+      <Spinner size={26} label={resolvedLabel} />
+      <p className="[font-size:var(--text-sm)]">{resolvedLabel}…</p>
     </div>
   )
 }

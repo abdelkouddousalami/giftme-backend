@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
@@ -6,6 +7,15 @@ import Icon from '../common/Icon.jsx'
 import { faq } from '../../data/faq.js'
 import { sectionIds } from '../../app/paths.js'
 import './FAQSection.css'
+
+const FAQ_KEYS = {
+  personalization: { question: 'home.faq.personalizationQ', answer: 'home.faq.personalizationA' },
+  'qr-memory': { question: 'home.faq.qrMemoryQ', answer: 'home.faq.qrMemoryA' },
+  video: { question: 'home.faq.videoQ', answer: 'home.faq.videoA' },
+  delivery: { question: 'home.faq.deliveryQ', answer: 'home.faq.deliveryA' },
+  tracking: { question: 'home.faq.trackingQ', answer: 'home.faq.trackingA' },
+  'cash-on-delivery': { question: 'home.faq.codQ', answer: 'home.faq.codA' },
+}
 
 /**
  * Single-open accordion: with six short answers, keeping one panel at a time
@@ -15,6 +25,7 @@ import './FAQSection.css'
  * animate.
  */
 function FAQSection() {
+  const { t } = useTranslation()
   const [openId, setOpenId] = useState(faq[0].id)
   const baseId = useId()
 
@@ -27,10 +38,10 @@ function FAQSection() {
           <SectionHeading
             id="faq-title"
             align="center"
-            eyebrow="Good to know"
+            eyebrow={t('home.faq.eyebrow')}
             title={
               <>
-                Questions, <em>answered.</em>
+                {t('home.faq.titleLine1')} <em>{t('home.faq.titleEm')}</em>
               </>
             }
           />
@@ -53,7 +64,7 @@ function FAQSection() {
                     aria-controls={panelId}
                     onClick={() => toggle(item.id)}
                   >
-                    <span>{item.question}</span>
+                    <span>{t(FAQ_KEYS[item.id].question)}</span>
                     <Icon
                       name={isOpen ? 'minus' : 'plus'}
                       size={18}
@@ -70,7 +81,7 @@ function FAQSection() {
                   className={`faq__panel${isOpen ? ' is-open' : ''}`}
                 >
                   <div className="faq__panel-inner">
-                    <p className="faq__answer">{item.answer}</p>
+                    <p className="faq__answer">{t(FAQ_KEYS[item.id].answer)}</p>
                   </div>
                 </div>
               </li>

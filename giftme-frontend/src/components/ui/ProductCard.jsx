@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Icon from '../common/Icon.jsx'
 import Badge from './Badge.jsx'
 import { paths } from '../../app/paths.js'
@@ -18,6 +19,7 @@ import { productImage } from '../../lib/productMedia.js'
 const LOW_STOCK_THRESHOLD = 5
 
 function ProductCard({ product, priority = false }) {
+  const { t } = useTranslation()
   const image = productImage(product)
   const soldOut = product.stock <= 0
   const lowStock = !soldOut && product.stock <= LOW_STOCK_THRESHOLD
@@ -39,16 +41,16 @@ function ProductCard({ product, priority = false }) {
           />
 
           {soldOut ? (
-            <span className="absolute top-3 left-3">
-              <Badge tone="ink">Sold out</Badge>
+            <span className="absolute top-3 start-3">
+              <Badge tone="ink">{t('product.soldOut')}</Badge>
             </span>
           ) : lowStock ? (
-            <span className="absolute top-3 left-3">
-              <Badge tone="clay">Only {product.stock} left</Badge>
+            <span className="absolute top-3 start-3">
+              <Badge tone="clay">{t('product.onlyLeft', { count: product.stock })}</Badge>
             </span>
           ) : product.customizationEnabled ? (
-            <span className="absolute top-3 left-3">
-              <Badge tone="ink">Personalized</Badge>
+            <span className="absolute top-3 start-3">
+              <Badge tone="ink">{t('product.personalized')}</Badge>
             </span>
           ) : null}
         </figure>
@@ -71,11 +73,11 @@ function ProductCard({ product, priority = false }) {
           </span>
 
           <span className="inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-burgundy">
-            {soldOut ? 'View' : 'Personalize'}
+            {soldOut ? t('common.view') : t('common.personalize')}
             <Icon
               name="arrowRight"
               size={15}
-              className="transition-transform duration-300 ease-brand group-hover:translate-x-1"
+              className="transition-transform duration-300 ease-brand group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1"
             />
           </span>
         </div>

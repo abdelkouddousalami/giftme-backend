@@ -3,8 +3,8 @@
   isolation: isolate;
   overflow: hidden;
   padding-block: var(--space-8) var(--space-6);
-  background-color: var(--color-surface-dark);
-  color: var(--color-text-inverse);
+  background-color: var(--color-ink-band);
+  color: var(--color-on-ink-band);
 }
 
 .footer__inner {
@@ -29,7 +29,7 @@
 .footer__tagline {
   font-size: var(--text-sm);
   line-height: 1.7;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 .footer__social {
@@ -44,7 +44,7 @@
   justify-content: center;
   width: 38px;
   height: 38px;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
   border: 1px solid var(--color-border-inverse);
   border-radius: var(--radius-sm);
   transition:
@@ -54,9 +54,9 @@
 }
 
 .footer__social-link:hover {
-  color: var(--color-text);
-  background-color: var(--color-text-inverse);
-  border-color: var(--color-text-inverse);
+  color: var(--color-ink-band);
+  background-color: var(--color-on-ink-band);
+  border-color: var(--color-on-ink-band);
 }
 
 .footer__columns {
@@ -72,7 +72,7 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 .footer__list {
@@ -84,15 +84,23 @@
 .footer__link {
   display: inline-block;
   font-size: var(--text-sm);
-  color: var(--color-text-inverse);
+  color: var(--color-on-ink-band);
   transition:
     color var(--transition-fast),
     transform var(--transition-fast);
 }
 
 .footer__link:hover {
-  color: var(--color-primary-light);
+  /* Not --color-primary-light: it's a theme-flipping token, and this hover
+     accent sits on the fixed-dark footer band (see the ink-band comment in
+     tokens.css). --color-accent (clay) is the one accent that stays legible
+     against near-black in both themes — the same reason QR memory uses it. */
+  color: var(--color-accent);
   transform: translateX(2px);
+}
+
+.footer__link:hover:dir(rtl) {
+  transform: translateX(-2px);
 }
 
 .footer__bottom {
@@ -102,7 +110,7 @@
   padding-top: var(--space-5);
   border-top: 1px solid var(--color-border-inverse);
   font-size: var(--text-xs);
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 @media (min-width: 54rem) {

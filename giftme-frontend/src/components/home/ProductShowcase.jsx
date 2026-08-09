@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import SectionHeading from '../common/SectionHeading.jsx'
 import Reveal from '../common/Reveal.jsx'
@@ -11,32 +12,17 @@ import { sectionIds } from '../../app/paths.js'
  * The shop grid three sections up has already done the naming, pricing and
  * linking; if this band repeated any of that it would read as the same section
  * twice. So it carries no prices and no buttons — one large photograph of a
- * finished order, three notes about how the thing is actually made, and two
- * wide details underneath.
- *
- * The details are deliberately landscape crops of photographs the page has
- * already shown in portrait. Same work, different framing: the eye reads it as
- * a second look rather than as a repeat.
+ * finished order and three notes about how the thing is actually made.
  */
 
-const DETAILS = [
-  {
-    id: 'tag',
-    src: images.productQrMemory,
-    alt: 'Hands holding a kraft gift tag printed with a QR code, beside the phone showing the memory page it opens',
-    position: '50% 46%',
-    caption: 'The tag — kraft card, hand-tied, one code',
-  },
-  {
-    id: 'pieces',
-    src: images.productPuzzle,
-    alt: 'A personalized photo puzzle assembled beside the printed photograph it was made from',
-    position: '50% 52%',
-    caption: 'The pieces — 500 of them, cut from your photo',
-  },
-]
+const NOTE_KEYS = {
+  print: { label: 'home.showcase.print', text: 'home.showcase.printText' },
+  box: { label: 'home.showcase.box', text: 'home.showcase.boxText' },
+  tag: { label: 'home.showcase.tag', text: 'home.showcase.tagText' },
+}
 
 function ProductShowcase() {
+  const { t } = useTranslation()
   return (
     <section
       id={sectionIds.showcase}
@@ -64,7 +50,7 @@ function ProductShowcase() {
                   aria-hidden="true"
                   className="mt-2 block h-px w-6 shrink-0 bg-clay"
                 />
-                A finished order — one portrait, printed twice, boxed together.
+                {t('home.showcase.caption')}
               </figcaption>
             </figure>
           </Reveal>
@@ -75,13 +61,13 @@ function ProductShowcase() {
           >
             <SectionHeading
               id="showcase-title"
-              eyebrow="The work"
+              eyebrow={t('home.showcase.eyebrow')}
               title={
                 <>
-                  Made by hand, <em>made for one person.</em>
+                  {t('home.showcase.titleLine1')} <em>{t('home.showcase.titleEm')}</em>
                 </>
               }
-              description="Nothing here is printed before it is ordered. Every piece is proofed against your photo, packed the same day it comes off the press, and checked by the person who packs it."
+              description={t('home.showcase.description')}
             />
 
             <dl className="mt-9 border-t border-line">
@@ -91,10 +77,10 @@ function ProductShowcase() {
                   className="grid grid-cols-[minmax(0,7rem)_minmax(0,1fr)] gap-x-5 border-b border-line py-4"
                 >
                   <dt className="pt-0.5 text-[0.6875rem] font-medium tracking-[0.14em] text-ink uppercase">
-                    {note.label}
+                    {t(NOTE_KEYS[note.id].label)}
                   </dt>
                   <dd className="m-0 text-ink-soft [font-size:var(--text-sm)]">
-                    {note.text}
+                    {t(NOTE_KEYS[note.id].text)}
                   </dd>
                 </div>
               ))}

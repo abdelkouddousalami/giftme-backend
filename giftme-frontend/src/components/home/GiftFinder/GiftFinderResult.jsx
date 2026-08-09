@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Button from '../../common/Button.jsx'
 import { paths } from '../../../app/paths.js'
 import { formatPriceShort } from '../../../lib/format.js'
@@ -13,6 +14,7 @@ import { productImage } from '../../../lib/productMedia.js'
  * would otherwise fall back to the document.
  */
 function GiftFinderResult({ product, reason, titleId, ref }) {
+  const { t } = useTranslation()
   /** `product` is a live ProductResponse, so price and name are the real ones. */
   const image = productImage(product)
 
@@ -25,7 +27,7 @@ function GiftFinderResult({ product, reason, titleId, ref }) {
     >
       <p className="flex items-center gap-3 text-[0.6875rem] font-medium tracking-[0.16em] text-ink-soft uppercase">
         <span aria-hidden="true" className="block h-px w-6 shrink-0 bg-clay" />
-        Our pick for you
+        {t('home.giftFinder.ourPick')}
       </p>
 
       <div className="mt-4 grid gap-4 sm:mt-5 sm:gap-6 sm:max-wide:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] wide:grid-cols-[minmax(0,11rem)_minmax(0,1fr)]">
@@ -57,7 +59,7 @@ function GiftFinderResult({ product, reason, titleId, ref }) {
             trailingIcon="arrowRight"
             className="mt-5 w-full sm:w-auto"
           >
-            Customize This Gift
+            {t('home.giftFinder.customizeThisGift')}
           </Button>
         </div>
       </div>

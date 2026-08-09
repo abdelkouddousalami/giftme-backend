@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Button from '../../components/common/Button.jsx'
 import Container from '../../components/common/Container.jsx'
 import Icon from '../../components/common/Icon.jsx'
@@ -51,23 +52,24 @@ function hexSwatch(value) {
  * "a mug". Every field read here is a real `CustomizationRequest` field.
  */
 function PersonalizationSummary({ customization, productName }) {
+  const { t } = useTranslation()
   if (!customization) return null
 
   const photo = resolveMediaUrl(customization.imageUrl)
   const swatch = hexSwatch(customization.textColor)
 
   const details = [
-    ['For', customization.recipientName],
-    ['Occasion', customization.occasion],
-    ['Printed text', excerpt(customization.text, 90)],
-    ['Gift message', excerpt(customization.giftMessage, 110)],
-    ['Font', customization.font],
-  ].filter(([, value]) => Boolean(String(value ?? '').trim()))
+    ['for', t('cart.personalizationLabels.for'), customization.recipientName],
+    ['occasion', t('cart.personalizationLabels.occasion'), customization.occasion],
+    ['printedText', t('cart.personalizationLabels.printedText'), excerpt(customization.text, 90)],
+    ['giftMessage', t('cart.personalizationLabels.giftMessage'), excerpt(customization.giftMessage, 110)],
+    ['font', t('cart.personalizationLabels.font'), customization.font],
+  ].filter(([, , value]) => Boolean(String(value ?? '').trim()))
 
   const marks = [
-    customization.qrMemoryEnabled ? { icon: 'qr', label: 'QR Memory included' } : null,
-    customization.videoUrl ? { icon: 'message', label: 'Video message' } : null,
-    customization.audioUrl ? { icon: 'music', label: 'Voice note' } : null,
+    customization.qrMemoryEnabled ? { icon: 'qr', label: t('cart.qrMemoryIncluded') } : null,
+    customization.videoUrl ? { icon: 'message', label: t('cart.videoMessage') } : null,
+    customization.audioUrl ? { icon: 'music', label: t('cart.voiceNote') } : null,
   ].filter(Boolean)
 
   if (!photo && details.length === 0 && marks.length === 0) return null
@@ -75,7 +77,7 @@ function PersonalizationSummary({ customization, productName }) {
   return (
     <div className="mt-3.5 rounded-(--radius-md) border border-line bg-bone px-4 py-3.5">
       <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-ink-soft uppercase">
-        Personalized
+        {t('cart.personalized')}
       </p>
 
       <div className="mt-2.5 flex max-sm:gap-3 sm:gap-4">
@@ -86,7 +88,7 @@ function PersonalizationSummary({ customization, productName }) {
           <figure className="m-0 shrink-0">
             <img
               src={photo}
-              alt={`Your artwork for ${productName}`}
+              alt={t('cart.artworkAlt', { name: productName })}
               loading="lazy"
               className="size-16 rounded-(--radius-sm) border border-line-strong bg-white object-cover"
             />
@@ -97,13 +99,13 @@ function PersonalizationSummary({ customization, productName }) {
           {details.length > 0 ? (
             /* No preflight: <dl> keeps its UA block margin and <dd> its 40px indent. */
             <dl className="m-0 flex flex-col gap-1">
-              {details.map(([label, value]) => (
+              {details.map(([key, label, value]) => (
                 // Side by side the label column steals most of a 390px row and
                 // squeezes a long excerpt down to a word per line, so below `sm`
                 // the value gets the full width and the label sits above it.
                 // Range-disjoint variants: `max-sm:` and `sm:` never both match.
                 <div
-                  key={label}
+                  key={key}
                   className="flex max-sm:flex-col max-sm:gap-0.5 sm:gap-2 [font-size:var(--text-xs)]"
                 >
                   <dt className="shrink-0 text-ink-soft">{label}</dt>
@@ -112,11 +114,11 @@ function PersonalizationSummary({ customization, productName }) {
                       sibling it detaches and floats at the line's right edge. */}
                   <dd className="m-0 min-w-0 text-ink">
                     {value}
-                    {label === 'Printed text' && swatch ? (
+                    {key === 'printedText' && swatch ? (
                       <span
                         aria-hidden="true"
                         style={{ backgroundColor: swatch }}
-                        className="ml-1.5 inline-block size-3 translate-y-0.5 rounded-(--radius-pill) border border-line-strong"
+                        className="ms-1.5 inline-block size-3 translate-y-0.5 rounded-(--radius-pill) border border-line-strong"
                       />
                     ) : null}
                   </dd>
@@ -146,6 +148,7 @@ function PersonalizationSummary({ customization, productName }) {
 
 /** A line whose product is still in the catalogue. */
 function CartLineRow({ line, onQuantityChange, onRemove }) {
+  const { t } = useTranslation()
   const product = line.product
   const image = productImage(product)
   const stock = Number(product.stock ?? 0)
@@ -178,7 +181,7 @@ function CartLineRow({ line, onQuantityChange, onRemove }) {
                 </Link>
               </h3>
               <p className="mt-1 text-ink-soft [font-size:var(--text-sm)]">
-                {formatPriceShort(product.price)} each
+                {t('cart.each', { price: formatPriceShort(product.price) })}
               </p>
             </div>
 
@@ -195,8 +198,8 @@ function CartLineRow({ line, onQuantityChange, onRemove }) {
           {line.exceedsStock ? (
             <p className="mt-3 rounded-(--radius-sm) border border-blush bg-burgundy-tint px-3.5 py-2.5 text-burgundy-deep [font-size:var(--text-xs)]">
               {soldOut
-                ? 'This sold out while it was in your cart. Remove it to check out.'
-                : `Only ${stock} left in stock — you have ${line.quantity}. Lower the quantity to ${stock} to check out.`}
+                ? t('cart.soldOutInCart')
+                : t('cart.onlyLeftInCart', { stock, quantity: line.quantity })}
             </p>
           ) : null}
 
@@ -209,17 +212,17 @@ function CartLineRow({ line, onQuantityChange, onRemove }) {
               // Sold out is the one case with no valid value, so it locks instead.
               max={soldOut ? line.quantity : stock}
               disabled={soldOut}
-              label={`Quantity for ${product.name}`}
+              label={t('cart.quantityFor', { name: product.name })}
             />
 
             <button
               type="button"
               onClick={() => onRemove(line.lineId)}
+              aria-label={t('cart.removeFrom', { name: product.name })}
               className="inline-flex items-center gap-1.5 text-ink-soft underline-offset-4 transition-colors duration-200 [font-size:var(--text-xs)] hover:text-burgundy hover:underline"
             >
               <Icon name="close" size={14} />
-              Remove
-              <span className="sr-only"> {product.name} from your cart</span>
+              <span aria-hidden="true">{t('cart.remove')}</span>
             </button>
           </div>
         </div>
@@ -234,18 +237,17 @@ function CartLineRow({ line, onQuantityChange, onRemove }) {
  * row says exactly that, offers only removal, and is in no total.
  */
 function UnavailableLineRow({ line, onRemove }) {
+  const { t } = useTranslation()
   return (
     <li className="border-b border-line py-6">
       <div className="flex rounded-(--radius-md) border border-blush bg-burgundy-tint px-4 py-4 max-sm:flex-col max-sm:items-start max-sm:gap-3 sm:items-center sm:justify-between sm:gap-5">
         <div className="min-w-0">
           <p className="flex items-center gap-2 font-medium text-burgundy-deep [font-size:var(--text-sm)]">
             <Icon name="box" size={16} className="shrink-0" />
-            This gift is no longer available
+            {t('cart.unavailableTitle')}
           </p>
           <p className="mt-1.5 text-ink-soft [font-size:var(--text-xs)]">
-            It left our catalogue while it was in your cart, so it can’t be ordered and isn’t
-            counted in your total. Remove it to continue. (Item #{line.productId}, quantity{' '}
-            {line.quantity}.)
+            {t('cart.unavailableDetail', { id: line.productId, quantity: line.quantity })}
           </p>
         </div>
 
@@ -255,10 +257,10 @@ function UnavailableLineRow({ line, onRemove }) {
         <Button
           variant="quiet"
           size="sm"
-          aria-label={`Remove item #${line.productId} from your cart`}
+          aria-label={t('cart.removeItemNumber', { id: line.productId })}
           onClick={() => onRemove(line.lineId)}
         >
-          Remove
+          {t('cart.remove')}
         </Button>
       </div>
     </li>
@@ -285,13 +287,14 @@ function CartLineSkeleton() {
 /** The list itself. A skeleton stands in for any line the catalogue has not
  *  answered for yet — never for a line it has answered about. */
 function CartLines({ lines, isUnresolved, refreshing, onQuantityChange, onRemove }) {
+  const { t } = useTranslation()
   return (
     <div>
-      <h2 className="sr-only">Items in your cart</h2>
+      <h2 className="sr-only">{t('cart.itemsHeading')}</h2>
 
       {refreshing ? (
         <output className="mb-3 block text-ink-soft [font-size:var(--text-xs)]">
-          Refreshing prices and stock…
+          {t('cart.refreshing')}
         </output>
       ) : null}
 
@@ -316,6 +319,7 @@ function CartLines({ lines, isUnresolved, refreshing, onQuantityChange, onRemove
 }
 
 function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockReason, busy }) {
+  const { t } = useTranslation()
   const deliveryFee = estimateDeliveryFee(subtotal)
   const total = subtotal + deliveryFee
   const toFreeDelivery = amountToFreeDelivery(subtotal)
@@ -327,16 +331,14 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
     >
       <div className="rounded-(--radius-lg) border border-line-strong bg-white p-6 shadow-(--shadow-xs)">
         <h2 id="cart-summary-heading" className="text-[1.15rem]">
-          Order summary
+          {t('cart.summary.title')}
         </h2>
 
         <dl className="m-0 mt-5 flex flex-col gap-3 [font-size:var(--text-sm)]">
           <div className="flex items-baseline justify-between gap-4">
             <dt className="text-ink-soft">
-              Subtotal
-              {itemCount > 0 ? (
-                <span> · {itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
-              ) : null}
+              {t('cart.summary.subtotal')}
+              {itemCount > 0 ? <span> · {t('common.item', { count: itemCount })}</span> : null}
             </dt>
             {/* An em dash, not `0.00 MAD`: until the catalogue has answered there
                 is no subtotal yet, and a confident zero would be a claim. */}
@@ -344,14 +346,14 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
           </div>
 
           <div className="flex items-baseline justify-between gap-4">
-            <dt className="text-ink-soft">Delivery, estimated</dt>
+            <dt className="text-ink-soft">{t('cart.summary.delivery')}</dt>
             <dd className="m-0 shrink-0 font-medium">
-              {!priceable ? '—' : deliveryFee === 0 ? 'Free' : formatPrice(deliveryFee)}
+              {!priceable ? '—' : deliveryFee === 0 ? t('common.free') : formatPrice(deliveryFee)}
             </dd>
           </div>
 
           <div className="mt-1 flex items-baseline justify-between gap-4 border-t border-line pt-4">
-            <dt className="font-display text-[1.05rem]">Estimated total</dt>
+            <dt className="font-display text-[1.05rem]">{t('cart.summary.total')}</dt>
             <dd className="m-0 shrink-0 font-display text-[1.15rem]">
               {priceable ? formatPrice(total) : '—'}
             </dd>
@@ -363,19 +365,20 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
             fee and total above are a preview computed in src/lib/delivery.js from
             the backend's two config values, and must always read as an estimate. */}
         <p className="mt-4 text-ink-soft [font-size:var(--text-xs)]">
-          Delivery and the total are estimates. GiftMe calculates the amount you actually pay when
-          your order is placed, and it appears on your confirmation.
+          {t('cart.summary.estimateNote')}
         </p>
 
         {toFreeDelivery > 0 && priceable ? (
           <p className="mt-5 flex items-start gap-2.5 rounded-(--radius-sm) bg-olive-tint px-3.5 py-3 text-olive-deep [font-size:var(--text-xs)]">
             <Icon name="truck" size={15} className="mt-0.5 shrink-0" />
-            <span>Add {formatPriceShort(toFreeDelivery)} more and delivery is on us.</span>
+            <span>
+              {t('cart.summary.freeDeliveryProgress', { amount: formatPriceShort(toFreeDelivery) })}
+            </span>
           </p>
         ) : priceable ? (
           <p className="mt-5 flex items-start gap-2.5 rounded-(--radius-sm) bg-olive-tint px-3.5 py-3 text-olive-deep [font-size:var(--text-xs)]">
             <Icon name="check" size={15} className="mt-0.5 shrink-0" />
-            <span>Free delivery unlocked on this order.</span>
+            <span>{t('cart.summary.freeDeliveryUnlocked')}</span>
           </p>
         ) : null}
 
@@ -384,7 +387,7 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
               real <button disabled> rather than a link that goes nowhere. */}
           {checkoutBlocked ? (
             <Button variant="primary" size="lg" className="btn--block" disabled>
-              {busy ? 'Checking availability…' : 'Continue to checkout'}
+              {busy ? t('cart.summary.checkingAvailability') : t('cart.summary.continueToCheckout')}
             </Button>
           ) : (
             <Button
@@ -394,7 +397,7 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
               to={paths.checkout}
               trailingIcon="arrowRight"
             >
-              Continue to checkout
+              {t('cart.summary.continueToCheckout')}
             </Button>
           )}
 
@@ -412,7 +415,7 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
               to={paths.shop}
               className="text-ink-soft underline-offset-4 transition-colors duration-200 [font-size:var(--text-xs)] hover:text-ink hover:underline"
             >
-              Continue shopping
+              {t('cart.continueShopping')}
             </Link>
           </p>
         </div>
@@ -420,7 +423,7 @@ function OrderSummary({ subtotal, itemCount, priceable, checkoutBlocked, blockRe
         {/* COD is the only value the backend's PaymentMethod enum accepts. */}
         <p className="mt-6 flex items-center justify-center gap-2 border-t border-line pt-5 text-ink-soft [font-size:var(--text-xs)]">
           <Icon name="cash" size={15} className="shrink-0" />
-          Pay cash on delivery
+          {t('cart.summary.payCod')}
         </p>
       </div>
     </aside>
@@ -447,19 +450,20 @@ function asErrorStateInput(message) {
  * over-ordered one: its stepper is locked, so telling anyone to "lower the
  * quantity" would be advice with no control attached to it.
  */
-function checkoutBlockReason({ pending, hydrationError, hasBlockedLine, hasSoldOutLine, hasStockIssue }) {
+function checkoutBlockReason(t, { pending, hydrationError, hasBlockedLine, hasSoldOutLine, hasStockIssue }) {
   // Before the first hydrate settles every line is momentarily product-less,
   // which is not a fault to report — the CTA already reads "Checking
   // availability…".
   if (pending) return null
-  if (hydrationError) return 'We could not refresh your cart, so it is not safe to check out yet.'
-  if (hasBlockedLine) return 'Remove the unavailable item to continue.'
-  if (hasSoldOutLine) return 'Remove the sold-out item to continue.'
-  if (hasStockIssue) return 'Adjust the highlighted quantity to continue.'
+  if (hydrationError) return t('cart.blockReasons.hydrationError')
+  if (hasBlockedLine) return t('cart.blockReasons.unavailable')
+  if (hasSoldOutLine) return t('cart.blockReasons.soldOut')
+  if (hasStockIssue) return t('cart.blockReasons.stockIssue')
   return null
 }
 
 function CartPage() {
+  const { t } = useTranslation()
   const {
     lines,
     availableLines,
@@ -503,7 +507,7 @@ function CartPage() {
     hasStockIssue ||
     availableLines.length === 0
 
-  const blockReason = checkoutBlockReason({
+  const blockReason = checkoutBlockReason(t, {
     pending,
     hydrationError,
     hasBlockedLine,
@@ -518,22 +522,22 @@ function CartPage() {
       <Container>
         <SectionHeading
           as="h1"
-          eyebrow={itemCount > 0 ? `${itemCount} ${itemCount === 1 ? 'item' : 'items'}` : 'Your bag'}
+          eyebrow={itemCount > 0 ? t('common.item', { count: itemCount }) : t('cart.yourBag')}
           title={
             <>
-              Your <em>cart</em>
+              {t('cart.titleLine1')} <em>{t('cart.titleEm')}</em>
             </>
           }
-          description="Prices, stock and availability are read from our catalogue every time you open this page, so what you see here is what we will make."
+          description={t('cart.description')}
         />
 
         <div className="mt-10">
           {isEmpty ? (
             <EmptyState
               icon="bag"
-              title="Your cart is empty"
-              description="Nothing here yet. Every GiftMe piece is made to order — pick one and personalize it."
-              actionLabel="Browse gifts"
+              title={t('cart.emptyTitle')}
+              description={t('cart.emptyDescription')}
+              actionLabel={t('cart.browseGifts')}
               actionTo={paths.shop}
             />
           ) : hydrationError ? (
@@ -541,14 +545,14 @@ function CartPage() {
               <ErrorState
                 error={asErrorStateInput(hydrationError)}
                 onRetry={retryHydrate}
-                title="We couldn't refresh your cart"
+                title={t('cart.loadErrorTitle')}
                 className="w-full"
               />
               <Link
                 to={paths.shop}
                 className="text-ink-soft underline-offset-4 transition-colors duration-200 [font-size:var(--text-sm)] hover:text-ink hover:underline"
               >
-                Continue shopping
+                {t('cart.continueShopping')}
               </Link>
             </div>
           ) : (

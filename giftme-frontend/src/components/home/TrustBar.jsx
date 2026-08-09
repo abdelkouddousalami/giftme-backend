@@ -1,6 +1,13 @@
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Icon from '../common/Icon.jsx'
 import { trustPoints } from '../../data/home.js'
+
+const TEXT_KEYS = {
+  preview: { title: 'home.trustBar.previewTitle', note: 'home.trustBar.previewNote' },
+  cash: { title: 'home.trustBar.cashTitle', note: 'home.trustBar.cashNote' },
+  delivery: { title: 'home.trustBar.deliveryTitle', note: 'home.trustBar.deliveryNote' },
+}
 
 /**
  * The band that answers the three questions a shopper asks before they will
@@ -13,6 +20,7 @@ import { trustPoints } from '../../data/home.js'
  * divider.
  */
 function TrustBar() {
+  const { t } = useTranslation()
   return (
     <section
       aria-label="Ordering, payment and delivery"
@@ -27,8 +35,10 @@ function TrustBar() {
               // emitted by both Tailwind entry points and deduped to the later
               // (admin) block, so it beats the storefront-only `wide:`. Range-
               // disjoint variants are the fix — see styles/tailwind.css.
+              // `sm:border-s` (not `border-l`) so the divider sits on the
+              // reading-start edge in both directions.
               className={`flex items-start gap-4 border-line py-6 sm:max-wide:px-6 sm:py-7 wide:px-9 ${
-                index > 0 ? 'max-sm:border-t sm:border-l' : ''
+                index > 0 ? 'max-sm:border-t sm:border-s' : ''
               }`}
             >
               <Icon
@@ -40,10 +50,10 @@ function TrustBar() {
 
               <div className="min-w-0">
                 <p className="text-[0.6875rem] leading-[1.5] font-medium tracking-[0.14em] text-ink uppercase">
-                  {point.title}
+                  {t(TEXT_KEYS[point.id].title)}
                 </p>
                 <p className="mt-1.5 text-ink-soft [font-size:var(--text-sm)]">
-                  {point.note}
+                  {t(TEXT_KEYS[point.id].note)}
                 </p>
               </div>
             </li>

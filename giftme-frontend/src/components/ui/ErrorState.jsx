@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Button from '../common/Button.jsx'
 
 /**
@@ -16,15 +17,16 @@ function ErrorState({
   className = '',
   compact = false,
 }) {
+  const { t } = useTranslation()
   const message = typeof error === 'string' ? error : error?.message
   const isNetwork = typeof error === 'object' && error?.isNetwork
 
   const heading =
-    title ?? (isNetwork ? "We couldn't reach GiftMe" : 'Something went wrong')
+    title ?? (isNetwork ? t('common.couldNotReach') : t('common.somethingWrong'))
 
   const detail = isNetwork
-    ? 'The server did not respond. Check your connection and try again.'
-    : (message ?? 'Please try again.')
+    ? t('common.networkDetail')
+    : (message ?? t('common.pleaseRetry'))
 
   return (
     <div
@@ -53,7 +55,7 @@ function ErrorState({
 
       {onRetry ? (
         <Button variant="outline" size="sm" onClick={onRetry}>
-          Try again
+          {t('common.tryAgain')}
         </Button>
       ) : null}
     </div>

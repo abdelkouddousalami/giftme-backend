@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Icon from '../common/Icon.jsx'
 
 /**
@@ -8,20 +9,21 @@ import Icon from '../common/Icon.jsx'
  * them. Pages are zero-based in the API and one-based on screen.
  */
 function Pagination({ page, totalPages, first, last, onChange, className = '' }) {
+  const { t } = useTranslation()
   if (!totalPages || totalPages <= 1) return null
 
   const numbers = pageWindow(page, totalPages)
 
   return (
-    <nav aria-label="Pagination" className={`flex items-center justify-center gap-2 ${className}`}>
+    <nav aria-label={t('ui.pagination')} className={`flex items-center justify-center gap-2 ${className}`}>
       <button
         type="button"
         onClick={() => onChange(page - 1)}
         disabled={first}
-        aria-label="Previous page"
+        aria-label={t('ui.previousPage')}
         className="flex size-9 items-center justify-center rounded-(--radius-sm) border border-line-strong text-ink transition-colors duration-200 hover:border-ink disabled:cursor-not-allowed disabled:border-line disabled:text-ink-soft"
       >
-        <Icon name="chevronRight" size={16} className="rotate-180" />
+        <Icon name="chevronRight" size={16} className="rotate-180 rtl:rotate-0" />
       </button>
 
       <ul className="flex items-center gap-1.5">
@@ -54,10 +56,10 @@ function Pagination({ page, totalPages, first, last, onChange, className = '' })
         type="button"
         onClick={() => onChange(page + 1)}
         disabled={last}
-        aria-label="Next page"
+        aria-label={t('ui.nextPage')}
         className="flex size-9 items-center justify-center rounded-(--radius-sm) border border-line-strong text-ink transition-colors duration-200 hover:border-ink disabled:cursor-not-allowed disabled:border-line disabled:text-ink-soft"
       >
-        <Icon name="chevronRight" size={16} />
+        <Icon name="chevronRight" size={16} className="rtl:rotate-180" />
       </button>
     </nav>
   )

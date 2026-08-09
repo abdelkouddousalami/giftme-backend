@@ -12,8 +12,8 @@
   isolation: isolate;
   overflow: hidden;
   padding-block: var(--section-y-lg);
-  background-color: var(--color-surface-dark);
-  color: var(--color-text-inverse);
+  background-color: var(--color-ink-band);
+  color: var(--color-on-ink-band);
 }
 
 /* Warm light behind the phone, so the brightest object on the page has a
@@ -51,7 +51,7 @@
 .qr-memory__title {
   max-width: 17ch;
   font-size: var(--text-display-2);
-  color: var(--color-text-inverse);
+  color: var(--color-on-ink-band);
 }
 
 /* Two statements, two lines. Letting "More than a gift. A" share a line makes
@@ -70,7 +70,7 @@
   max-width: 48ch;
   font-size: var(--text-lg);
   line-height: 1.7;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 /* --- Scan flow ------------------------------------------------------------ */
@@ -113,7 +113,7 @@
   display: block;
   margin-top: 2px;
   font-size: var(--text-sm);
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 /* --- Layer chips ---------------------------------------------------------- */
@@ -130,7 +130,7 @@
   gap: var(--space-2);
   padding: 0.45rem 0.85rem;
   font-size: var(--text-xs);
-  color: var(--color-text-inverse);
+  color: var(--color-on-ink-band);
   border: 1px solid var(--color-border-inverse);
   border-radius: var(--radius-sm);
 }
@@ -154,7 +154,7 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-xs);
-  color: var(--color-text-inverse-muted);
+  color: var(--color-on-ink-band-muted);
 }
 
 .qr-memory__privacy svg {
@@ -232,7 +232,7 @@
   width: min(272px, 80%);
   margin-inline: auto;
   padding: 9px;
-  background-color: var(--color-surface-dark-soft);
+  background-color: var(--color-ink-band-soft);
   border: 1px solid var(--color-border-inverse);
   border-radius: 26px;
   box-shadow: var(--shadow-lg);

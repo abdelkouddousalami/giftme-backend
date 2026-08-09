@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../common/Container.jsx'
 import Button from '../common/Button.jsx'
 import Icon from '../common/Icon.jsx'
@@ -8,9 +9,23 @@ import { primaryNav } from '../../data/navigation.js'
 import { paths } from '../../app/paths.js'
 import { useCart } from '../../store/CartContext.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
+import { useTheme } from '../../contexts/ThemeContext.jsx'
+import { SUPPORTED_LANGUAGES } from '../../i18n/index.js'
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+/** primaryNav carries no label of its own (see data/navigation.js) - each id
+ * maps to a `nav.*` translation key here instead. */
+const NAV_LABEL_KEYS = {
+  shop: 'nav.shop',
+  personalized: 'nav.personalized',
+  'how-it-works': 'nav.howItWorks',
+  story: 'nav.story',
+}
+
+const THEME_SEQUENCE = ['system', 'light', 'dark']
+const THEME_ICONS = { system: 'globe', light: 'sun', dark: 'moon' }
 
 /**
  * Quiet 40px target: no chrome at rest, a warm sand well on hover.
@@ -26,14 +41,15 @@ const ICON_BUTTON =
 
 /** Shared by the desktop drawer and the mobile menu — declared once. */
 function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
+  const { t } = useTranslation()
   return (
     <form
-      className="m-0 flex items-center gap-3 rounded-(--radius-sm) border border-line-input bg-white py-1.5 pr-1.5 pl-4 transition-colors duration-200 focus-within:border-ink"
+      className="m-0 flex items-center gap-3 rounded-(--radius-sm) border border-line-input bg-white ps-4 pe-1.5 py-1.5 transition-colors duration-200 focus-within:border-ink"
       role="search"
       onSubmit={onSubmit}
     >
       <label className="sr-only" htmlFor={id}>
-        Search gifts
+        {t('header.searchLabel')}
       </label>
       <Icon name="search" size={18} className="shrink-0 text-ink-soft" />
       <input
@@ -41,7 +57,7 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
         ref={inputRef}
         className="min-w-0 flex-1 appearance-none border-0 bg-transparent py-2 text-sm outline-none placeholder:text-ink-soft"
         type="search"
-        placeholder="Search puzzles, mugs, QR memories…"
+        placeholder={t('header.searchPlaceholder')}
         value={value}
         onChange={onChange}
         autoComplete="off"
@@ -50,9 +66,135 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
         type="submit"
         className="shrink-0 rounded-(--radius-xs) bg-ink px-4 py-2 text-xs font-medium tracking-[0.06em] text-paper uppercase transition-colors duration-200 hover:bg-graphite"
       >
-        Search
+        {t('header.search')}
       </button>
     </form>
+  )
+}
+
+/** Small popover: current language as a two-letter mark, three choices inside. */
+function LanguageSwitcher({ variant = 'desktop' }) {
+  const { i18n, t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+    const onClick = (event) => {
+      if (!rootRef.current?.contains(event.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [open])
+
+  const current = SUPPORTED_LANGUAGES.find((lang) => lang.code === i18n.resolvedLanguage) ?? SUPPORTED_LANGUAGES[0]
+
+  function choose(code) {
+    i18n.changeLanguage(code)
+    setOpen(false)
+  }
+
+  if (variant === 'mobile') {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="sr-only">{t('header.language')}</span>
+        {SUPPORTED_LANGUAGES.map((lang) => (
+          <button
+            key={lang.code}
+            type="button"
+            onClick={() => choose(lang.code)}
+            aria-pressed={lang.code === current.code}
+            className={`rounded-(--radius-pill) border px-3.5 py-1.5 text-xs font-medium transition-colors duration-200 ${
+              lang.code === current.code
+                ? 'border-ink bg-ink text-paper'
+                : 'border-line-strong text-ink-soft hover:border-ink hover:text-ink'
+            }`}
+          >
+            {lang.code.toUpperCase()}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div ref={rootRef} className="relative max-nav:hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-label={t('header.language')}
+        className={`inline-flex gap-1.5 px-2.5 ${ICON_BUTTON}`}
+      >
+        <Icon name="globe" size={18} />
+        <span className="text-[0.6875rem] font-medium tracking-[0.06em] uppercase">{current.code}</span>
+      </button>
+
+      {open ? (
+        <ul
+          role="menu"
+          className="absolute end-0 top-full z-(--z-overlay) mt-2 min-w-[9rem] rounded-(--radius-sm) border border-line-strong bg-white py-1.5 shadow-(--shadow-md)"
+        >
+          {SUPPORTED_LANGUAGES.map((lang) => (
+            <li key={lang.code} role="none">
+              <button
+                type="button"
+                role="menuitemradio"
+                aria-checked={lang.code === current.code}
+                onClick={() => choose(lang.code)}
+                className={`flex w-full items-center justify-between gap-4 px-4 py-2 text-start text-sm transition-colors duration-200 hover:bg-bone ${
+                  lang.code === current.code ? 'text-ink font-medium' : 'text-ink-soft'
+                }`}
+              >
+                {lang.label}
+                {lang.code === current.code ? <Icon name="check" size={14} /> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  )
+}
+
+/** Cycles system -> light -> dark -> system on each press; the icon and the
+ * accessible label always name the mode currently in effect. */
+function ThemeToggle({ variant = 'desktop' }) {
+  const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
+
+  function cycle() {
+    const next = THEME_SEQUENCE[(THEME_SEQUENCE.indexOf(theme) + 1) % THEME_SEQUENCE.length]
+    setTheme(next)
+  }
+
+  const label = t('header.theme') + ': ' + t(`header.${theme}Mode`)
+
+  if (variant === 'mobile') {
+    return (
+      <button
+        type="button"
+        onClick={cycle}
+        className="inline-flex items-center gap-2 rounded-(--radius-pill) border border-line-strong px-3.5 py-1.5 text-xs font-medium text-ink-soft transition-colors duration-200 hover:border-ink hover:text-ink"
+      >
+        <Icon name={THEME_ICONS[theme]} size={15} strokeWidth={1.4} />
+        {t(`header.${theme}Mode`)}
+      </button>
+    )
+  }
+
+  return (
+    <span className="max-nav:hidden">
+      <button
+        type="button"
+        onClick={cycle}
+        title={label}
+        aria-label={label}
+        className={`inline-flex ${ICON_BUTTON}`}
+      >
+        <Icon name={THEME_ICONS[theme]} size={19} />
+      </button>
+    </span>
   )
 }
 
@@ -72,6 +214,7 @@ function SearchForm({ id, inputRef, value, onChange, onSubmit }) {
  * a hairline and a more opaque ground the moment the page leaves the top.
  */
 function Header() {
+  const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -88,7 +231,7 @@ function Header() {
   const accountTo = isAuthenticated ? paths.account : paths.login
 
   const cartLabel =
-    itemCount > 0 ? `Cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}` : 'Cart, empty'
+    itemCount > 0 ? t('header.cartItems', { count: itemCount }) : t('header.cartEmpty')
 
   const headerRef = useRef(null)
   const menuButtonRef = useRef(null)
@@ -259,7 +402,7 @@ function Header() {
                     className="group relative inline-block py-2 text-[0.875rem] text-ink transition-colors duration-200 hover:text-burgundy"
                     to={item.to}
                   >
-                    {item.label}
+                    {t(NAV_LABEL_KEYS[item.id])}
                     <span
                       aria-hidden="true"
                       className="absolute inset-x-0 bottom-0.5 block h-px origin-left scale-x-0 bg-current transition-transform duration-300 ease-brand group-hover:scale-x-100"
@@ -282,16 +425,19 @@ function Header() {
               >
                 <Icon name={isSearchOpen ? 'close' : 'search'} size={19} />
                 <span className="sr-only">
-                  {isSearchOpen ? 'Close search' : 'Search gifts'}
+                  {isSearchOpen ? t('header.closeSearch') : t('header.searchLabel')}
                 </span>
               </button>
             </span>
+
+            <LanguageSwitcher />
+            <ThemeToggle />
 
             <span className="max-nav:hidden">
               <Link to={accountTo} className={`inline-flex ${ICON_BUTTON}`}>
                 <Icon name="user" size={19} />
                 <span className="sr-only">
-                  {isAuthenticated ? 'Your account' : 'Sign in'}
+                  {isAuthenticated ? t('header.yourAccount') : t('header.signIn')}
                 </span>
               </Link>
             </span>
@@ -304,7 +450,7 @@ function Header() {
               {itemCount > 0 ? (
                 <span
                   aria-hidden="true"
-                  className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-(--radius-pill) bg-burgundy px-1 text-[0.5625rem] leading-4 font-semibold text-paper"
+                  className="absolute top-1 end-1 flex min-w-4 items-center justify-center rounded-(--radius-pill) bg-burgundy px-1 text-[0.5625rem] leading-4 font-semibold text-paper"
                 >
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
@@ -319,7 +465,7 @@ function Header() {
 
             <div className="max-wide:hidden">
               <Button to={paths.shop} variant="outline" size="sm">
-                Create Your Gift
+                {t('header.createYourGift')}
               </Button>
             </div>
 
@@ -333,7 +479,7 @@ function Header() {
             >
               <Icon name={isMenuOpen ? 'close' : 'menu'} size={22} />
               <span className="sr-only">
-                {isMenuOpen ? 'Close menu' : 'Open menu'}
+                {isMenuOpen ? t('header.closeMenu') : t('header.openMenu')}
               </span>
             </button>
           </div>
@@ -368,20 +514,20 @@ function Header() {
         tabIndex={-1}
         aria-label="Menu"
       >
-        <Container className="flex flex-col gap-7 pt-7 pb-16">
+        <Container className="flex flex-col gap-6 pt-6 pb-16">
           <nav aria-label="Mobile">
             <ul className="flex flex-col border-t border-line">
               {primaryNav.map((item, index) => (
                 <li key={item.id}>
                   <Link
-                    className="flex items-baseline gap-4 border-b border-line py-4 font-display text-[1.55rem] transition-colors duration-200 hover:text-burgundy"
+                    className="flex items-center gap-3 border-b border-line py-3.5 text-[1.0625rem] font-medium transition-colors duration-200 hover:text-burgundy"
                     to={item.to}
                     onClick={closeMenu}
                   >
-                    <span className="font-sans text-[0.625rem] tracking-[0.2em] text-clay-deep">
+                    <span className="text-[0.625rem] tracking-[0.1em] text-clay-deep tabular-nums">
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    {item.label}
+                    {t(NAV_LABEL_KEYS[item.id])}
                   </Link>
                 </li>
               ))}
@@ -402,8 +548,13 @@ function Header() {
             trailingIcon="arrowRight"
             onClick={closeMenu}
           >
-            Create Your Gift
+            {t('header.createYourGift')}
           </Button>
+
+          <div className="flex flex-wrap items-center gap-2.5 border-t border-line pt-6">
+            <LanguageSwitcher variant="mobile" />
+            <ThemeToggle variant="mobile" />
+          </div>
 
           <ul className="flex flex-col gap-4 border-t border-line pt-6 text-[0.875rem] text-ink-soft">
             <li>
@@ -413,7 +564,7 @@ function Header() {
                 className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-ink"
               >
                 <Icon name="user" size={17} strokeWidth={1.4} />
-                {isAuthenticated ? 'Your account' : 'Sign in'}
+                {isAuthenticated ? t('header.yourAccount') : t('header.signIn')}
               </Link>
             </li>
             <li>
@@ -423,7 +574,7 @@ function Header() {
                 className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-ink"
               >
                 <Icon name="truck" size={17} strokeWidth={1.4} />
-                Track your order
+                {t('header.trackOrder')}
               </Link>
             </li>
           </ul>

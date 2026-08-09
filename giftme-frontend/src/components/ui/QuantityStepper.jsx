@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Quantity control.
@@ -8,22 +9,26 @@ import { useId } from 'react'
  * validates and atomically reserves stock server-side, this just avoids sending
  * a request that is guaranteed to fail.
  */
-function QuantityStepper({ value, onChange, min = 1, max = 99, disabled = false, label = 'Quantity' }) {
+function QuantityStepper({ value, onChange, min = 1, max = 99, disabled = false, label }) {
+  const { t } = useTranslation()
   const id = useId()
   const clamp = (next) => Math.min(max, Math.max(min, next))
 
   return (
     <div className="inline-flex items-center">
       <label htmlFor={id} className="sr-only">
-        {label}
+        {label ?? t('ui.quantity')}
       </label>
 
+      {/* `rounded-s-`/`rounded-e-` (not `-l-`/`-r-`): this row's DOM order also
+          flips under dir="rtl", so the logical corners keep the rounding on the
+          two outer edges of the control in both directions. */}
       <button
         type="button"
         onClick={() => onChange(clamp(value - 1))}
         disabled={disabled || value <= min}
-        aria-label="Decrease quantity"
-        className="flex size-10 items-center justify-center rounded-l-(--radius-sm) border border-line-input text-ink transition-colors duration-200 hover:bg-bone disabled:cursor-not-allowed disabled:text-ink-soft"
+        aria-label={t('ui.decreaseQuantity')}
+        className="flex size-10 items-center justify-center rounded-s-(--radius-sm) border border-line-input text-ink transition-colors duration-200 hover:bg-bone disabled:cursor-not-allowed disabled:text-ink-soft"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
           <path d="M5.5 12h13" />
@@ -50,8 +55,8 @@ function QuantityStepper({ value, onChange, min = 1, max = 99, disabled = false,
         type="button"
         onClick={() => onChange(clamp(value + 1))}
         disabled={disabled || value >= max}
-        aria-label="Increase quantity"
-        className="flex size-10 items-center justify-center rounded-r-(--radius-sm) border border-line-input text-ink transition-colors duration-200 hover:bg-bone disabled:cursor-not-allowed disabled:text-ink-soft"
+        aria-label={t('ui.increaseQuantity')}
+        className="flex size-10 items-center justify-center rounded-e-(--radius-sm) border border-line-input text-ink transition-colors duration-200 hover:bg-bone disabled:cursor-not-allowed disabled:text-ink-soft"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
           <path d="M12 5.5v13" />

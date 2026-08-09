@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Container from '../../components/common/Container.jsx'
 import Button from '../../components/common/Button.jsx'
 import Icon from '../../components/common/Icon.jsx'
@@ -47,39 +48,47 @@ function looksLikeEmail(value) {
   return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.')
 }
 
-function validate(form) {
+function validate(t, form) {
   const errors = {}
 
-  if (!form.name.trim()) errors.name = 'Please tell us who this order is for.'
-  else if (form.name.trim().length > LIMITS.name) errors.name = `Keep the name under ${LIMITS.name} characters.`
+  if (!form.name.trim()) errors.name = t('checkout.validation.nameRequired')
+  else if (form.name.trim().length > LIMITS.name) {
+    errors.name = t('checkout.validation.nameTooLong', { max: LIMITS.name })
+  }
 
-  if (!form.phone.trim()) errors.phone = 'We need a phone number — the courier calls before delivery.'
-  else if (form.phone.trim().length > LIMITS.phone) errors.phone = `Keep the number under ${LIMITS.phone} characters.`
+  if (!form.phone.trim()) errors.phone = t('checkout.validation.phoneRequired')
+  else if (form.phone.trim().length > LIMITS.phone) {
+    errors.phone = t('checkout.validation.phoneTooLong', { max: LIMITS.phone })
+  }
 
   // @Email accepts null and empty, so an untouched field is valid; a filled one is not.
   if (form.email.trim() && !looksLikeEmail(form.email.trim())) {
-    errors.email = 'That email does not look right. Leave it empty if you would rather not share one.'
+    errors.email = t('checkout.validation.emailInvalid')
   }
 
-  if (!form.city.trim()) errors.city = 'Which city are we delivering to?'
-  else if (form.city.trim().length > LIMITS.city) errors.city = `Keep the city under ${LIMITS.city} characters.`
+  if (!form.city.trim()) errors.city = t('checkout.validation.cityRequired')
+  else if (form.city.trim().length > LIMITS.city) {
+    errors.city = t('checkout.validation.cityTooLong', { max: LIMITS.city })
+  }
 
-  if (!form.address.trim()) errors.address = 'Add the street, building and any landmark that helps.'
+  if (!form.address.trim()) errors.address = t('checkout.validation.addressRequired')
 
   return errors
 }
 
 /** Human-readable summary of one line's Customization, for the read-only review. */
-function personalizationNotes(customization) {
+function personalizationNotes(t, customization) {
   if (!customization) return []
   const notes = []
   if (customization.occasion) notes.push(customization.occasion)
-  if (customization.recipientName) notes.push(`For ${customization.recipientName}`)
+  if (customization.recipientName) {
+    notes.push(t('checkout.notes.forRecipient', { name: customization.recipientName }))
+  }
   if (customization.text) notes.push(`“${customization.text}”`)
-  if (customization.imageUrl) notes.push('Photo added')
-  if (customization.videoUrl) notes.push('Video added')
-  if (customization.audioUrl) notes.push('Voice note added')
-  if (customization.qrMemoryEnabled) notes.push('QR memory')
+  if (customization.imageUrl) notes.push(t('checkout.notes.photoAdded'))
+  if (customization.videoUrl) notes.push(t('checkout.notes.videoAdded'))
+  if (customization.audioUrl) notes.push(t('checkout.notes.voiceNoteAdded'))
+  if (customization.qrMemoryEnabled) notes.push(t('checkout.notes.qrMemory'))
   return notes
 }
 
@@ -123,11 +132,12 @@ function ReviewLineSkeleton() {
  * failed request must never be reported as a deleted product.
  */
 function ReviewLine({ line, gone }) {
-  const notes = personalizationNotes(line.customization)
+  const { t } = useTranslation()
+  const notes = personalizationNotes(t, line.customization)
   const art = line.product ? productImage(line.product) : null
 
   let title = line.product?.name
-  if (!title) title = gone ? 'Item no longer available' : 'We could not confirm this item'
+  if (!title) title = gone ? t('checkout.itemNoLongerAvailable') : t('checkout.couldNotConfirmItem')
 
   return (
     <li className="flex gap-4">
@@ -154,8 +164,8 @@ function ReviewLine({ line, gone }) {
         </div>
 
         <p className="text-ink-soft [font-size:var(--text-xs)]">
-          Qty {line.quantity}
-          {line.product ? ` · ${formatPrice(line.unitPrice)} each` : ''}
+          {t('checkout.qty', { count: line.quantity })}
+          {line.product ? ` · ${t('checkout.eachPrice', { price: formatPrice(line.unitPrice) })}` : ''}
         </p>
 
         {notes.length > 0 ? (
@@ -163,14 +173,12 @@ function ReviewLine({ line, gone }) {
         ) : null}
 
         {gone ? (
-          <p className="text-burgundy-deep [font-size:var(--text-xs)]">
-            Remove it in your cart to continue.
-          </p>
+          <p className="text-burgundy-deep [font-size:var(--text-xs)]">{t('checkout.removeInCart')}</p>
         ) : null}
 
         {line.exceedsStock ? (
           <p className="text-burgundy-deep [font-size:var(--text-xs)]">
-            Only {line.product.stock} left — lower the quantity in your cart.
+            {t('checkout.onlyLeftLowerInCart', { stock: line.product.stock })}
           </p>
         ) : null}
       </div>
@@ -179,6 +187,7 @@ function ReviewLine({ line, gone }) {
 }
 
 function CheckoutPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
   const {
@@ -248,10 +257,10 @@ function CheckoutPage() {
 
   let deliveryLabel = formatPrice(deliveryFee)
   if (pricesPending) deliveryLabel = '—'
-  else if (deliveryFee === 0) deliveryLabel = 'Free'
+  else if (deliveryFee === 0) deliveryLabel = t('common.free')
 
-  let submitLabel = `Place order · ${formatPrice(total)} on delivery`
-  if (pricesPending) submitLabel = hydrationError ? 'Place order' : 'Checking availability…'
+  let submitLabel = t('checkout.placeOrder', { total: formatPrice(total) })
+  if (pricesPending) submitLabel = hydrationError ? t('checkout.placeOrderPlain') : t('checkout.checkingAvailability')
 
   // Anything that would make the request certain to fail, or make the preview
   // untrustworthy, blocks the button rather than being discovered as a 400.
@@ -278,7 +287,7 @@ function CheckoutPage() {
     event.preventDefault()
     if (submitLock.current || blocked) return
 
-    const errors = validate(form)
+    const errors = validate(t, form)
     setFieldErrors(errors)
     if (Object.keys(errors).length > 0) {
       setSubmitError(null)
@@ -318,9 +327,7 @@ function CheckoutPage() {
       const code = extractErrorCode(err)
       setSubmitError({
         code,
-        message: isNetworkError(err)
-          ? 'We could not reach GiftMe, so nothing was ordered. Check your connection and try again.'
-          : extractErrorMessage(err),
+        message: isNetworkError(err) ? t('checkout.networkError') : extractErrorMessage(err),
       })
 
       // The catalog moved under the shopper — pull the live product rows back in
@@ -337,7 +344,7 @@ function CheckoutPage() {
     return (
       <section className="py-(--section-y)">
         <Container size="narrow">
-          <LoadingBlock label="Confirming your order" />
+          <LoadingBlock label={t('checkout.confirmingOrder')} />
         </Container>
       </section>
     )
@@ -349,15 +356,15 @@ function CheckoutPage() {
         <Container size="narrow">
           <EmptyState
             icon="bag"
-            title="There is nothing to check out yet"
-            description="Your cart is empty. Pick something worth personalizing and it will be waiting here."
-            actionLabel="Browse gifts"
+            title={t('checkout.emptyTitle')}
+            description={t('checkout.emptyDescription')}
+            actionLabel={t('cart.browseGifts')}
             actionTo={paths.shop}
           />
           <p className="mt-5 text-center text-ink-soft [font-size:var(--text-sm)]">
-            Already added something?{' '}
+            {t('checkout.alreadyAdded')}{' '}
             <Link className="text-burgundy underline underline-offset-4" to={paths.cart}>
-              Open your cart
+              {t('checkout.openCart')}
             </Link>
             .
           </p>
@@ -370,14 +377,12 @@ function CheckoutPage() {
     <section className="py-(--section-y)">
       <Container>
         <header className="max-w-[46rem]">
-          <p className="eyebrow">Checkout</p>
+          <p className="eyebrow">{t('checkout.eyebrow')}</p>
           <h1 className="mt-4 [font-size:var(--text-display-2)]">
-            Almost <em className="font-display text-burgundy italic">theirs.</em>
+            {t('checkout.titleLine1')}{' '}
+            <em className="font-display text-burgundy italic">{t('checkout.titleEm')}</em>
           </h1>
-          <p className="mt-4 text-ink-soft [font-size:var(--text-lg)]">
-            No account, no card, no payment page. Tell us where it goes and pay the courier in cash
-            when it arrives.
-          </p>
+          <p className="mt-4 text-ink-soft [font-size:var(--text-lg)]">{t('checkout.lead')}</p>
         </header>
 
         {/* Below the two-column breakpoint the review sits far down the page, so
@@ -385,12 +390,12 @@ function CheckoutPage() {
         <p className="mt-6 items-center gap-2.5 rounded-(--radius-sm) border border-line-strong bg-white px-4 py-3 text-ink-soft [font-size:var(--text-sm)] max-nav:flex nav:hidden">
           <Icon name="bag" size={16} className="shrink-0" />
           <span>
-            {itemCount} {itemCount === 1 ? 'item' : 'items'} ·{' '}
+            {t('common.item', { count: itemCount })} ·{' '}
             {pricesPending ? (
-              <span className="text-ink">checking today&rsquo;s prices…</span>
+              <span className="text-ink">{t('checkout.itemsSummaryChecking')}</span>
             ) : (
               <>
-                <span className="text-ink">{formatPrice(total)}</span> estimated
+                <span className="text-ink">{formatPrice(total)}</span> {t('checkout.itemsSummaryEstimated')}
               </>
             )}
           </span>
@@ -401,29 +406,26 @@ function CheckoutPage() {
             {isAuthenticated ? (
               <p className="flex items-start gap-3 rounded-(--radius-sm) border border-line bg-olive-mist px-4 py-3 text-olive-deep [font-size:var(--text-sm)]">
                 <Icon name="check" size={16} className="mt-0.5 shrink-0" />
-                <span>
-                  Signed in as {user?.fullName || user?.email}. This order will be linked to your
-                  account — we have filled in what we already know.
-                </span>
+                <span>{t('checkout.signedInAs', { name: user?.fullName || user?.email })}</span>
               </p>
             ) : (
               <p className="text-ink-soft [font-size:var(--text-sm)]">
-                Checking out as a guest, which is perfectly fine.{' '}
+                {t('checkout.guestCheckout')}{' '}
                 <Link className="text-burgundy underline underline-offset-4" to={paths.login}>
-                  Sign in first
+                  {t('checkout.signInFirst')}
                 </Link>{' '}
-                only if you would like this order attached to your account.
+                {t('checkout.signInOnlyIf')}
               </p>
             )}
 
             <fieldset className="m-0 border-0 p-0">
               <legend className="p-0 text-[0.6875rem] font-medium tracking-[0.14em] text-ink-soft uppercase">
-                Who is receiving it
+                {t('checkout.whoReceiving')}
               </legend>
 
               <div className="mt-5 grid gap-5 sm:grid-cols-2">
                 <TextField
-                  label="Full name"
+                  label={t('checkout.fullName')}
                   name="name"
                   autoComplete="name"
                   required
@@ -431,10 +433,10 @@ function CheckoutPage() {
                   value={form.name}
                   onChange={updateField('name')}
                   error={fieldErrors.name}
-                  placeholder="Amina Benali"
+                  placeholder={t('checkout.fullNamePlaceholder')}
                 />
                 <TextField
-                  label="Phone"
+                  label={t('checkout.phone')}
                   name="phone"
                   type="tel"
                   autoComplete="tel"
@@ -443,11 +445,11 @@ function CheckoutPage() {
                   value={form.phone}
                   onChange={updateField('phone')}
                   error={fieldErrors.phone}
-                  hint="The courier calls this number before delivering."
-                  placeholder="06 12 34 56 78"
+                  hint={t('checkout.phoneHint')}
+                  placeholder={t('checkout.phonePlaceholder')}
                 />
                 <TextField
-                  label="Email"
+                  label={t('checkout.email')}
                   name="email"
                   type="email"
                   autoComplete="email"
@@ -455,8 +457,8 @@ function CheckoutPage() {
                   value={form.email}
                   onChange={updateField('email')}
                   error={fieldErrors.email}
-                  hint="Optional."
-                  placeholder="you@example.com"
+                  hint={t('checkout.emailHint')}
+                  placeholder={t('checkout.emailPlaceholder')}
                   className="sm:col-span-2"
                 />
               </div>
@@ -464,12 +466,12 @@ function CheckoutPage() {
 
             <fieldset className="m-0 border-0 p-0">
               <legend className="p-0 text-[0.6875rem] font-medium tracking-[0.14em] text-ink-soft uppercase">
-                Where it goes
+                {t('checkout.whereItGoes')}
               </legend>
 
               <div className="mt-5 grid gap-5 sm:grid-cols-2">
                 <TextField
-                  label="City"
+                  label={t('checkout.city')}
                   name="city"
                   autoComplete="address-level2"
                   required
@@ -477,10 +479,10 @@ function CheckoutPage() {
                   value={form.city}
                   onChange={updateField('city')}
                   error={fieldErrors.city}
-                  placeholder="Casablanca"
+                  placeholder={t('checkout.cityPlaceholder')}
                 />
                 <TextAreaField
-                  label="Address"
+                  label={t('checkout.address')}
                   name="address"
                   autoComplete="street-address"
                   required
@@ -488,16 +490,16 @@ function CheckoutPage() {
                   value={form.address}
                   onChange={updateField('address')}
                   error={fieldErrors.address}
-                  hint="Street, building, floor — plus any landmark that makes it easy to find."
+                  hint={t('checkout.addressHint')}
                   className="sm:col-span-2"
                 />
                 <TextAreaField
-                  label="Delivery notes"
+                  label={t('checkout.deliveryNotes')}
                   name="notes"
                   rows={2}
                   value={form.notes}
                   onChange={updateField('notes')}
-                  hint="Optional. A surprise to keep quiet about, a better time to call, a gate code."
+                  hint={t('checkout.deliveryNotesHint')}
                   className="sm:col-span-2"
                 />
               </div>
@@ -505,7 +507,7 @@ function CheckoutPage() {
 
             <fieldset className="m-0 border-0 p-0">
               <legend className="p-0 text-[0.6875rem] font-medium tracking-[0.14em] text-ink-soft uppercase">
-                How you pay
+                {t('checkout.howYouPay')}
               </legend>
 
               {/* One method exists, so this states it rather than offering a
@@ -518,11 +520,8 @@ function CheckoutPage() {
                   <Icon name="cash" size={20} />
                 </span>
                 <div className="flex flex-col gap-1.5">
-                  <p className="font-display text-[1.05rem] text-ink">Cash on delivery</p>
-                  <p className="text-ink-soft [font-size:var(--text-sm)]">
-                    You pay the courier, in cash, when the gift is in your hands. Nothing is charged
-                    now and we never ask for card details.
-                  </p>
+                  <p className="font-display text-[1.05rem] text-ink">{t('checkout.codTitle')}</p>
+                  <p className="text-ink-soft [font-size:var(--text-sm)]">{t('checkout.codDescription')}</p>
                 </div>
               </div>
             </fieldset>
@@ -533,12 +532,11 @@ function CheckoutPage() {
                 {catalogChanged ? (
                   <div className="flex flex-col gap-3 rounded-(--radius-sm) border border-line-strong bg-bone px-4 py-4">
                     <p className="text-ink-soft [font-size:var(--text-sm)]">
-                      The catalog changed while you were filling this in, so nothing was ordered and
-                      your cart is untouched. Take a look at what is still available, then come back.
+                      {t('checkout.catalogChanged')}
                     </p>
                     <div>
                       <Button variant="outline" size="sm" to={paths.cart}>
-                        Review my cart
+                        {t('checkout.reviewCart')}
                       </Button>
                     </div>
                   </div>
@@ -553,22 +551,19 @@ function CheckoutPage() {
             {hydrationError ? (
               <div className="flex flex-col gap-3 rounded-(--radius-sm) border border-blush bg-burgundy-tint px-4 py-4">
                 <p className="text-burgundy-deep [font-size:var(--text-sm)]">
-                  We could not confirm today&rsquo;s prices and stock, so ordering is paused. Nothing
-                  is wrong with your cart — this one is on our side.
+                  {t('checkout.hydrationErrorNotice')}
                 </p>
                 <div>
                   <Button variant="outline" size="sm" onClick={retryHydrate} disabled={hydrating}>
-                    Try again
+                    {t('checkout.tryAgain')}
                   </Button>
                 </div>
               </div>
             ) : blocked && !pricesPending && !hydrating ? (
               <p className="rounded-(--radius-sm) border border-blush bg-burgundy-tint px-4 py-3 text-burgundy-deep [font-size:var(--text-sm)]">
-                {availableLines.length === 0
-                  ? 'None of the items in your cart can be ordered right now.'
-                  : 'One or more items need attention before you can order.'}{' '}
+                {availableLines.length === 0 ? t('checkout.noneOrderable') : t('checkout.needsAttention')}{' '}
                 <Link className="underline underline-offset-4" to={paths.cart}>
-                  Fix it in your cart
+                  {t('checkout.fixInCart')}
                 </Link>
                 .
               </p>
@@ -584,23 +579,22 @@ function CheckoutPage() {
               >
                 {submitting ? (
                   <span className="inline-flex items-center gap-2.5">
-                    <Spinner size={16} label="Placing your order" />
-                    Placing your order…
+                    <Spinner size={16} label={t('checkout.placingOrder')} />
+                    {t('checkout.placingOrder')}
                   </span>
                 ) : (
                   submitLabel
                 )}
               </Button>
               <p className="text-center text-ink-soft [font-size:var(--text-xs)]">
-                Placing the order confirms the amount above with GiftMe, which prices everything
-                fresh on its side. The confirmation page shows the final figures.
+                {t('checkout.confirmNote')}
               </p>
             </div>
           </form>
 
           <aside className="nav:sticky nav:top-[calc(var(--header-height)+1.5rem)]">
             <div className="rounded-(--radius-lg) border border-line-strong bg-white p-6">
-              <h2 className="font-display text-[1.15rem]">Your order</h2>
+              <h2 className="font-display text-[1.15rem]">{t('checkout.yourOrder')}</h2>
 
               {hydrationError ? (
                 <ErrorState
@@ -608,7 +602,7 @@ function CheckoutPage() {
                   className="mt-5"
                   error={asErrorStateInput(hydrationError)}
                   onRetry={retryHydrate}
-                  title="We could not confirm today's prices"
+                  title={t('checkout.loadPricesErrorTitle')}
                 />
               ) : null}
 
@@ -626,15 +620,15 @@ function CheckoutPage() {
 
               <dl className="m-0 mt-6 flex flex-col gap-2.5 border-t border-line pt-5 [font-size:var(--text-sm)]">
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-ink-soft">Subtotal</dt>
+                  <dt className="text-ink-soft">{t('checkout.subtotal')}</dt>
                   <dd className="m-0 text-ink">{pricesPending ? '—' : formatPrice(subtotal)}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-ink-soft">Delivery (estimated)</dt>
+                  <dt className="text-ink-soft">{t('checkout.deliveryEstimated')}</dt>
                   <dd className="m-0 text-ink">{deliveryLabel}</dd>
                 </div>
                 <div className="mt-2 flex items-baseline justify-between gap-4 border-t border-line pt-4">
-                  <dt className="font-display text-[1.05rem] text-ink">Estimated total</dt>
+                  <dt className="font-display text-[1.05rem] text-ink">{t('checkout.estimatedTotal')}</dt>
                   <dd className="m-0 font-display text-[1.15rem] text-ink">
                     {pricesPending ? '—' : formatPrice(total)}
                   </dd>
@@ -645,30 +639,29 @@ function CheckoutPage() {
                   role="status" announces the refreshed figures without stealing focus. */}
               {(hydrating || pricesPending) && !hydrationError ? (
                 <output className="mt-4 block text-ink-soft [font-size:var(--text-xs)]">
-                  Confirming today&rsquo;s prices and stock…
+                  {t('checkout.confirmingPrices')}
                 </output>
               ) : null}
 
               {toFreeDelivery > 0 && !pricesPending ? (
                 <p className="mt-4 text-ink-soft [font-size:var(--text-xs)]">
-                  {formatPrice(toFreeDelivery)} more and delivery is on us.
+                  {t('checkout.toFreeDelivery', { amount: formatPrice(toFreeDelivery) })}
                 </p>
               ) : null}
 
               <p className="mt-4 border-t border-line pt-4 text-ink-soft [font-size:var(--text-xs)]">
-                Delivery is an estimate — GiftMe calculates the fee and the total when the order is
-                created, and those are the amounts you will be asked for at the door.
+                {t('checkout.estimateFootnote')}
               </p>
             </div>
 
             <ul className="mt-6 flex flex-col gap-3 text-ink-soft [font-size:var(--text-xs)]">
               <li className="flex items-start gap-2.5">
                 <Icon name="truck" size={15} className="mt-0.5 shrink-0 text-clay" />
-                Delivered across Morocco, usually within five days.
+                {t('checkout.deliveredAcrossMorocco')}
               </li>
               <li className="flex items-start gap-2.5">
                 <Icon name="lock" size={15} className="mt-0.5 shrink-0 text-clay" />
-                Your details are used for this delivery, nothing else.
+                {t('checkout.detailsPrivacy')}
               </li>
             </ul>
           </aside>
