@@ -5,10 +5,10 @@ import { paths } from '../../app/paths.js'
 /**
  * The GiftMe logo. The only logo markup in the app.
  *
- * It renders the master artwork itself
- * (`assets/images/4EB6D51C-F768-4E98-99E7-019C064C22B4.png`) rather than the
- * vector reconstruction that used to live here — the master is the brand, and
- * a redrawing of it will always drift.
+ * It renders the master artwork itself (`assets/images/brand-logo.webp`, a
+ * lossless re-encode of the PNG master — same pixels, same canvas) rather than
+ * the vector reconstruction that used to live here — the master is the brand,
+ * and a redrawing of it will always drift.
  *
  * THE CROP. The file is a 1536×1024 transparent canvas with the lockup sitting
  * in a 992×307 window at (275, 322); the other ~65% is empty. That is trimmed
